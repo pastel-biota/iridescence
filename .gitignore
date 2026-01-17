@@ -5,3 +5,6 @@
 # React Router
 /.react-router/
 /build/
+
+# TWD (Claude Code task working directory)
+/_ignored/

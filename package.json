@@ -6,7 +6,21 @@
     "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc"
+    "typecheck": "react-router typegen && tsc",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix --max-warnings 0",
+      "prettier --write"
+    ],
+    "*.{js,json,md,css}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@react-router/node": "7.12.0",
@@ -17,13 +31,22 @@
     "react-router": "7.12.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@react-router/dev": "7.12.0",
     "@tailwindcss/vite": "^4.1.13",
     "@types/node": "^22",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.0",
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2",
+    "typescript-eslint": "^8.53.0",
     "vite": "^7.1.7",
     "vite-tsconfig-paths": "^5.1.4"
   }
