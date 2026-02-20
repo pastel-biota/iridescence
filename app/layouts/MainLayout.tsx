@@ -16,6 +16,7 @@ const header = hstack({
 });
 
 const logo = vstack({
+  fontFamily: "en",
   alignItems: "start",
   gap: 0,
 });

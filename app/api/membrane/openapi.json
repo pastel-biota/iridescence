@@ -1,0 +1,763 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "utoipa-axum",
+    "description": "Utoipa's axum bindings for seamless integration for the two",
+    "contact": {
+      "name": "Juha Kukkonen",
+      "email": "juha7kukkonen@gmail.com"
+    },
+    "license": {
+      "name": "MIT OR Apache-2.0",
+      "identifier": "MIT OR Apache-2.0"
+    },
+    "version": "0.2.0"
+  },
+  "paths": {
+    "/photos": {
+      "get": {
+        "summary": "Get the list of images.",
+        "operationId": "get_images_list",
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "The pagination cursor - retrieves from beginning",
+            "required": false,
+            "schema": {
+              "type": ["string", "null"]
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "the default is 50",
+            "required": false,
+            "schema": {
+              "type": ["integer", "null"],
+              "format": "int32",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The photo was registered and ready for image upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessfulResponse_GetImagesListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The parameter/body was invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Registers a new photo",
+        "description": "Register a new photo, and prepare for the upload for the actual image.",
+        "operationId": "new_photo",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPhotoParam"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "The photo was registered and ready for image upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessfulResponse_NewPhotoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The parameter/body was invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/photos/by-hashes": {
+      "post": {
+        "summary": "Get photos list by hashes list",
+        "description": "Retrieves the list of photos from the list of hashes.",
+        "operationId": "get_photos_list_by_hashes_list",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetPhotosListByHashesListParam"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The photo was registered and ready for image upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessfulResponse_GetPhotosListByHashesListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The parameter/body was invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/photos/{photo_id}": {
+      "get": {
+        "summary": "Get a photo's meta",
+        "description": "This is a new field. This initially returns implemented error.",
+        "operationId": "get_photo_meta",
+        "parameters": [
+          {
+            "name": "photo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The photo was registered and ready for image upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessfulResponse_GetPhotoMetaResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The parameter/body was invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/photos/{photo_id}/images/{image_id}": {
+      "get": {
+        "summary": "Get actual image",
+        "description": "Retrieves the actual image binary payload.",
+        "operationId": "get_image",
+        "parameters": [
+          {
+            "name": "photo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "image_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The photo/image is found and the image payload is returned.",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/BinaryBody"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The parameter/body was invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Registers a new photo",
+        "description": "Register a new photo, and prepare for the upload for the actual image.",
+        "operationId": "upload_image",
+        "parameters": [
+          {
+            "name": "photo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "image_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "$ref": "#/components/schemas/BinaryBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The image was uploaded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessfulResponse_UploadImageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The parameter/body was invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BinaryBody": {
+        "type": "string",
+        "format": "binary"
+      },
+      "ClientError": {
+        "type": "object",
+        "required": ["status", "reason"],
+        "properties": {
+          "reason": {
+            "type": "string",
+            "example": "The value was invalid..."
+          },
+          "status": {
+            "type": "string",
+            "example": "error"
+          }
+        }
+      },
+      "GetImagesListResponse": {
+        "type": "object",
+        "required": ["total_count", "photos"],
+        "properties": {
+          "next_cursor": {
+            "type": ["string", "null"]
+          },
+          "photos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PhotoReferenceSchema"
+            }
+          },
+          "total_count": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          }
+        }
+      },
+      "GetPhotoMetaResponse": {
+        "type": "object",
+        "required": ["photo"],
+        "properties": {
+          "photo": {
+            "$ref": "#/components/schemas/PhotoScheme"
+          }
+        }
+      },
+      "GetPhotosListByHashesListParam": {
+        "type": "object",
+        "required": ["hashes"],
+        "properties": {
+          "hashes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Hashes to look up.",
+            "example": [
+              "2653cb6500059d0316f40d0d24b7a11ace792a03eeab5b5e183275443e230612",
+              "cb9e7fd9ead80d775c9cbe0fe5202a1f3202bcde6a9da92e54bc57a6e7b8931e"
+            ],
+            "maxItems": 100,
+            "minItems": 1
+          }
+        }
+      },
+      "GetPhotosListByHashesListResponse": {
+        "type": "object",
+        "required": ["photos"],
+        "properties": {
+          "photos": {
+            "type": "object",
+            "description": "The map of found hashes and corresponding photos.\nNote that this map does not necessarily include all hashes specified,\nas not found hashes will not be included.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PhotoReferenceSchema"
+            },
+            "propertyNames": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ImageReferenceSchema": {
+        "type": "object",
+        "required": ["id", "height", "ext"],
+        "properties": {
+          "ext": {
+            "type": "string"
+          },
+          "height": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "NewImages": {
+        "type": "object",
+        "required": ["name", "ext", "width", "height"],
+        "properties": {
+          "ext": {
+            "type": "string",
+            "example": "jpg"
+          },
+          "height": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1080,
+            "minimum": 0
+          },
+          "name": {
+            "type": "string",
+            "example": "1080p"
+          },
+          "width": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1920,
+            "minimum": 0
+          }
+        }
+      },
+      "NewPhotoImageResponse": {
+        "type": "object",
+        "required": ["name", "image_id"],
+        "properties": {
+          "image_id": {
+            "type": "string",
+            "example": "01AAAA"
+          },
+          "name": {
+            "type": "string",
+            "example": "1080p"
+          }
+        }
+      },
+      "NewPhotoParam": {
+        "type": "object",
+        "required": [
+          "shot_date",
+          "file_name",
+          "original_sha256",
+          "uploading_images",
+          "properties"
+        ],
+        "properties": {
+          "file_name": {
+            "type": "string",
+            "description": "The file name of the original picture.\nThis is also used for the part of identification, but any arbitary string can be specified.",
+            "example": "IMG_0001.JPG"
+          },
+          "original_sha256": {
+            "type": "string",
+            "description": "The hexadecimal representation of SHA256 hash.",
+            "example": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "maxLength": 64,
+            "minLength": 64
+          },
+          "properties": {
+            "$ref": "#/components/schemas/PropertiesSchema"
+          },
+          "shot_date": {
+            "type": "string",
+            "description": "The datetime the photo was taken.\nThe shot timstamp is used for the part of identification and indexing.",
+            "example": "2026-01-02T03:45:06+09:00"
+          },
+          "uploading_images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NewImages"
+            },
+            "description": "The list of dimensions of the images to be uploaded later.\nEach images will get each image ID assigned for the later upload."
+          }
+        }
+      },
+      "NewPhotoResponse": {
+        "type": "object",
+        "required": ["id", "images", "max_parallelism"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier assigned to the created photo.",
+            "example": "202601_img_0001_jpg-01AAAA"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NewPhotoImageResponse"
+            },
+            "description": "The list of identifiers assigned to the specified images.\nThe image ID is used to upload the actual image later."
+          },
+          "max_parallelism": {
+            "type": "integer",
+            "format": "int32",
+            "description": "How much of parallel upload is accepted for the upload of this image.",
+            "minimum": 0
+          }
+        }
+      },
+      "PhotoImages": {
+        "type": "object",
+        "required": ["image_id", "name", "ext", "width", "height"],
+        "properties": {
+          "ext": {
+            "type": "string",
+            "example": "jpg"
+          },
+          "height": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1080,
+            "minimum": 0
+          },
+          "image_id": {
+            "type": "string",
+            "example": "01AAAA"
+          },
+          "name": {
+            "type": "string",
+            "example": "1080p"
+          },
+          "width": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1920,
+            "minimum": 0
+          }
+        }
+      },
+      "PhotoReferenceSchema": {
+        "type": "object",
+        "required": [
+          "id",
+          "year",
+          "month",
+          "original_sha256",
+          "images",
+          "shot_time"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImageReferenceSchema"
+            }
+          },
+          "month": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "original_sha256": {
+            "type": "string"
+          },
+          "shot_time": {
+            "type": "string"
+          },
+          "year": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PhotoScheme": {
+        "type": "object",
+        "required": ["id", "original_sha256", "images", "properties"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier assigned to the created photo.",
+            "example": "202601_img_0001_jpg-01AAAA"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PhotoImages"
+            },
+            "description": "The list of identifiers assigned to the specified images.\nThe image ID is used to upload the actual image later."
+          },
+          "original_sha256": {
+            "type": "string",
+            "description": "The hexadecimal representation of SHA256 hash.",
+            "example": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "maxLength": 64,
+            "minLength": 64
+          },
+          "properties": {
+            "$ref": "#/components/schemas/PropertiesSchema"
+          }
+        }
+      },
+      "PropertiesSchema": {
+        "type": "object",
+        "required": ["machine", "lens"],
+        "properties": {
+          "gps_lng_lat": {
+            "type": ["array", "null"],
+            "items": {
+              "type": "number",
+              "format": "float"
+            },
+            "example": [36.123456, 138.123456],
+            "maxItems": 2,
+            "minItems": 2
+          },
+          "lens": {
+            "type": "string",
+            "example": "SIGMA"
+          },
+          "machine": {
+            "type": "string",
+            "example": "X-T4"
+          }
+        }
+      },
+      "SuccessfulResponse_GetImagesListResponse": {
+        "type": "object",
+        "required": ["status", "response"],
+        "properties": {
+          "response": {
+            "type": "object",
+            "required": ["total_count", "photos"],
+            "properties": {
+              "next_cursor": {
+                "type": ["string", "null"]
+              },
+              "photos": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PhotoReferenceSchema"
+                }
+              },
+              "total_count": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "okay"
+          }
+        }
+      },
+      "SuccessfulResponse_GetPhotoMetaResponse": {
+        "type": "object",
+        "required": ["status", "response"],
+        "properties": {
+          "response": {
+            "type": "object",
+            "required": ["photo"],
+            "properties": {
+              "photo": {
+                "$ref": "#/components/schemas/PhotoScheme"
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "okay"
+          }
+        }
+      },
+      "SuccessfulResponse_GetPhotosListByHashesListResponse": {
+        "type": "object",
+        "required": ["status", "response"],
+        "properties": {
+          "response": {
+            "type": "object",
+            "required": ["photos"],
+            "properties": {
+              "photos": {
+                "type": "object",
+                "description": "The map of found hashes and corresponding photos.\nNote that this map does not necessarily include all hashes specified,\nas not found hashes will not be included.",
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/PhotoReferenceSchema"
+                },
+                "propertyNames": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "okay"
+          }
+        }
+      },
+      "SuccessfulResponse_NewPhotoResponse": {
+        "type": "object",
+        "required": ["status", "response"],
+        "properties": {
+          "response": {
+            "type": "object",
+            "required": ["id", "images", "max_parallelism"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Identifier assigned to the created photo.",
+                "example": "202601_img_0001_jpg-01AAAA"
+              },
+              "images": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/NewPhotoImageResponse"
+                },
+                "description": "The list of identifiers assigned to the specified images.\nThe image ID is used to upload the actual image later."
+              },
+              "max_parallelism": {
+                "type": "integer",
+                "format": "int32",
+                "description": "How much of parallel upload is accepted for the upload of this image.",
+                "minimum": 0
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "okay"
+          }
+        }
+      },
+      "SuccessfulResponse_UploadImageResponse": {
+        "type": "object",
+        "required": ["status", "response"],
+        "properties": {
+          "response": {
+            "type": "object",
+            "required": ["id", "max_parallelism"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Identifier assigned to the created photo.",
+                "example": "202601_img_0001_jpg-01AAAA"
+              },
+              "max_parallelism": {
+                "type": "integer",
+                "format": "int32",
+                "description": "How much of parallel upload is accepted for the upload of this image.",
+                "minimum": 0
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "okay"
+          }
+        }
+      },
+      "UploadImageResponse": {
+        "type": "object",
+        "required": ["id", "max_parallelism"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifier assigned to the created photo.",
+            "example": "202601_img_0001_jpg-01AAAA"
+          },
+          "max_parallelism": {
+            "type": "integer",
+            "format": "int32",
+            "description": "How much of parallel upload is accepted for the upload of this image.",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}
