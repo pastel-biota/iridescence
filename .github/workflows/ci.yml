@@ -14,43 +14,43 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@${{ CHECKOUT_SHA }}
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # 6.0.1
       - uses: ./.github/actions/setup
         with:
-          node-version: ${{ $NODE_VERSION }}
-          pnpm-version: ${{ $PNPM_VERSION }}
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm run lint
 
   format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@${{ CHECKOUT_SHA }}
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # 6.0.1
       - uses: ./.github/actions/setup
         with:
-          node-version: ${{ $NODE_VERSION }}
-          pnpm-version: ${{ $PNPM_VERSION }}
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm run format:check
 
   typecheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@${{ CHECKOUT_SHA }}
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # 6.0.1
       - uses: ./.github/actions/setup
         with:
-          node-version: ${{ $NODE_VERSION }}
-          pnpm-version: ${{ $PNPM_VERSION }}
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck
 
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@${{ CHECKOUT_SHA }}
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # 6.0.1
       - uses: ./.github/actions/setup
         with:
-          node-version: ${{ $NODE_VERSION }}
-          pnpm-version: ${{ $PNPM_VERSION }}
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
