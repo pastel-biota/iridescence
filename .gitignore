@@ -9,3 +9,9 @@
 # TWD (Claude Code task working directory)
 /_ignored/
 .serena/
+
+## Panda
+styled-system
+styled-system-studio
+*storybook.log
+storybook-static
