@@ -2,22 +2,26 @@ import { membraneQuery } from "~/api/membrane/client";
 import { mapPhotoReference } from "~/api/membrane/mappers";
 
 export function usePhotoList() {
-  return membraneQuery.useQuery(
+  return membraneQuery.useInfiniteQuery(
     "get",
     "/photos",
     {
       params: {
         query: {
           size: 30,
-          cursor: null,
         },
       },
     },
     {
+      pageParamName: "cursor",
       select: (data) => ({
-        totalCount: data.response.total_count,
-        photos: data.response.photos.map((photo) => mapPhotoReference(photo)),
+        pages: data.pages.map((page) =>
+          page.response.photos.map((photo) => mapPhotoReference(photo)),
+        ),
+        pageParams: data.pageParams,
       }),
+      getNextPageParam: (lastPage) => lastPage.response.next_cursor,
+      initialPageParam: null,
     },
   );
 }

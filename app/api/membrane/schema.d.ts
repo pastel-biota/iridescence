@@ -248,16 +248,38 @@ export interface components {
     };
     PropertiesSchema: {
       /**
+       * Format: double
+       * @example 5.4
+       */
+      f_number?: number | null;
+      /**
+       * Format: double
+       * @example 50
+       */
+      focal?: number | null;
+      /**
        * @example [
        *       36.123456,
        *       138.123456
        *     ]
        */
-      gps_lng_lat?: number[] | null;
+      gps_lat_lng?: number[] | null;
+      /**
+       * Format: int64
+       * @example 160
+       */
+      iso?: number | null;
       /** @example SIGMA */
-      lens: string;
+      lens?: string | null;
       /** @example X-T4 */
       machine: string;
+      /**
+       * Format: float
+       * @example 400
+       */
+      shutter_speed?: number | null;
+      /** @example true */
+      shutter_speed_controlled?: boolean | null;
     };
     SuccessfulResponse_GetImagesListResponse: {
       response: {

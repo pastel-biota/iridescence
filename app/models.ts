@@ -21,4 +21,10 @@ export type PhotoProperties = {
   gpsLngLat: [number, number] | null;
   machine: string;
   lens: string | null;
+  fNumber: number | null;
+  focal: number | null;
+  gpsLatLng: number[] | null;
+  iso: number | null;
+  shutterSpeed: number | null;
+  shutterSpeedControlled: boolean | null;
 };

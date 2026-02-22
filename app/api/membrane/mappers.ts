@@ -52,6 +52,12 @@ const photoProperties = z
     gps_lng_lat: z.tuple([z.number(), z.number()]).optional().nullable(),
     machine: z.string(),
     lens: z.string().nullable(),
+    f_number: z.number().nullable(),
+    focal: z.number().nullable(),
+    gps_lat_lng: z.tuple([z.number(), z.number()]).nullable(),
+    iso: z.number().nullable(),
+    shutter_speed: z.number().nullable(),
+    shutter_speed_controlled: z.boolean().nullable(),
   })
   .transform(
     (external) =>
@@ -60,5 +66,11 @@ const photoProperties = z
         gpsLngLat: external.gps_lng_lat ?? null,
         machine: external.machine,
         lens: external.lens,
+        fNumber: external.f_number,
+        focal: external.focal,
+        gpsLatLng: external.gps_lat_lng,
+        iso: external.iso,
+        shutterSpeed: external.shutter_speed,
+        shutterSpeedControlled: external.shutter_speed_controlled,
       }) satisfies PhotoProperties,
   );

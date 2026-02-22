@@ -583,9 +583,19 @@
       },
       "PropertiesSchema": {
         "type": "object",
-        "required": ["machine", "lens"],
+        "required": ["machine"],
         "properties": {
-          "gps_lng_lat": {
+          "f_number": {
+            "type": ["number", "null"],
+            "format": "double",
+            "example": 5.4
+          },
+          "focal": {
+            "type": ["number", "null"],
+            "format": "double",
+            "example": 50.0
+          },
+          "gps_lat_lng": {
             "type": ["array", "null"],
             "items": {
               "type": "number",
@@ -595,13 +605,28 @@
             "maxItems": 2,
             "minItems": 2
           },
+          "iso": {
+            "type": ["integer", "null"],
+            "format": "int64",
+            "example": 160,
+            "minimum": 0
+          },
           "lens": {
-            "type": "string",
+            "type": ["string", "null"],
             "example": "SIGMA"
           },
           "machine": {
             "type": "string",
             "example": "X-T4"
+          },
+          "shutter_speed": {
+            "type": ["number", "null"],
+            "format": "float",
+            "example": 400
+          },
+          "shutter_speed_controlled": {
+            "type": ["boolean", "null"],
+            "example": true
           }
         }
       },
