@@ -8,12 +8,14 @@ import { usePhotoDetail } from "./query";
 
 type Props = {
   photoId: string;
+  blurUrl: string;
   thumbnailUrl: string;
   fallbackColor: string;
 };
 
 export const PhotoTile: FC<Props> = ({
   photoId,
+  blurUrl,
   thumbnailUrl,
   fallbackColor,
 }) => {
@@ -25,6 +27,9 @@ export const PhotoTile: FC<Props> = ({
       className={`${root} group`}
       style={{
         backgroundColor: fallbackColor,
+        backgroundImage: `url(${blurUrl})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
       }}
       onMouseEnter={() => {
         setHovered(true);

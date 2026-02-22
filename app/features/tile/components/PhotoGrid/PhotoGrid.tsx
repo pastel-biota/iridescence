@@ -50,9 +50,13 @@ export const PhotoGrid: FC<Props> = ({ photos, onMoreRequested }) => {
       <ol className={root}>
         {photos.map((photo) => {
           const thumbnail = photo.images.find(({ id }) => id === "thumbnail");
+          const icon = photo.images.find(({ id }) => id === "icon");
 
           if (thumbnail == null) {
-            throw new Error("Exepcted to have the thumbnail image");
+            throw new Error("Expected to have the thumbnail image");
+          }
+          if (icon == null) {
+            throw new Error("Expected to have the icon image");
           }
 
           return (
@@ -60,6 +64,7 @@ export const PhotoGrid: FC<Props> = ({ photos, onMoreRequested }) => {
               <PhotoTile
                 photoId={photo.id}
                 thumbnailUrl={thumbnail.imageUrl}
+                blurUrl={icon.imageUrl}
                 fallbackColor={photo.representativeColor}
               />
             </li>
