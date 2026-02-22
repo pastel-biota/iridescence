@@ -6,6 +6,7 @@ export type Photo = {
 
 export type PhotoReference = {
   id: string;
+  representativeColor: string;
   images: ImageMeta[];
 };
 

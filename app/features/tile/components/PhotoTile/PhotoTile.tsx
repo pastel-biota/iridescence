@@ -9,15 +9,23 @@ import { usePhotoDetail } from "./query";
 type Props = {
   photoId: string;
   thumbnailUrl: string;
+  fallbackColor: string;
 };
 
-export const PhotoTile: FC<Props> = ({ photoId, thumbnailUrl }) => {
+export const PhotoTile: FC<Props> = ({
+  photoId,
+  thumbnailUrl,
+  fallbackColor,
+}) => {
   const [hovered, setHovered] = useState(false);
   const photo = usePhotoDetail(photoId, hovered);
 
   return (
     <article
       className={`${root} group`}
+      style={{
+        backgroundColor: fallbackColor,
+      }}
       onMouseEnter={() => {
         setHovered(true);
       }}

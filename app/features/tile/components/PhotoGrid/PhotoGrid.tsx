@@ -57,7 +57,11 @@ export const PhotoGrid: FC<Props> = ({ photos, onMoreRequested }) => {
 
           return (
             <li className={css({ aspectRatio: 1 })} key={photo.id}>
-              <PhotoTile photoId={photo.id} thumbnailUrl={thumbnail.imageUrl} />
+              <PhotoTile
+                photoId={photo.id}
+                thumbnailUrl={thumbnail.imageUrl}
+                fallbackColor={photo.representativeColor}
+              />
             </li>
           );
         })}
@@ -71,7 +75,6 @@ const root = grid({
   gridTemplateColumns: "repeat(auto-fill, minmax(max(24%, 250px), 1fr))",
   width: "100%",
   maxWidth: "1600px",
-  paddingInline: "32px",
   marginInline: "auto",
   gap: "4px",
 });

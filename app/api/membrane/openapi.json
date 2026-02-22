@@ -69,9 +69,9 @@
         "operationId": "new_photo",
         "requestBody": {
           "content": {
-            "application/json": {
+            "application/octet-stream": {
               "schema": {
-                "$ref": "#/components/schemas/NewPhotoParam"
+                "$ref": "#/components/schemas/BinaryBody"
               }
             }
           },
@@ -90,6 +90,16 @@
           },
           "400": {
             "description": "The parameter/body was invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "There already was a photo registered with the matching hash",
             "content": {
               "application/json": {
                 "schema": {
@@ -224,61 +234,6 @@
             }
           }
         }
-      },
-      "post": {
-        "summary": "Registers a new photo",
-        "description": "Register a new photo, and prepare for the upload for the actual image.",
-        "operationId": "upload_image",
-        "parameters": [
-          {
-            "name": "photo_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "image_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/octet-stream": {
-              "schema": {
-                "$ref": "#/components/schemas/BinaryBody"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "The image was uploaded.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessfulResponse_UploadImageResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "The parameter/body was invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ClientError"
-                }
-              }
-            }
-          }
-        }
       }
     }
   },
@@ -383,112 +338,18 @@
           }
         }
       },
-      "NewImages": {
-        "type": "object",
-        "required": ["name", "ext", "width", "height"],
-        "properties": {
-          "ext": {
-            "type": "string",
-            "example": "jpg"
-          },
-          "height": {
-            "type": "integer",
-            "format": "int32",
-            "example": 1080,
-            "minimum": 0
-          },
-          "name": {
-            "type": "string",
-            "example": "1080p"
-          },
-          "width": {
-            "type": "integer",
-            "format": "int32",
-            "example": 1920,
-            "minimum": 0
-          }
-        }
-      },
-      "NewPhotoImageResponse": {
-        "type": "object",
-        "required": ["name", "image_id"],
-        "properties": {
-          "image_id": {
-            "type": "string",
-            "example": "01AAAA"
-          },
-          "name": {
-            "type": "string",
-            "example": "1080p"
-          }
-        }
-      },
-      "NewPhotoParam": {
-        "type": "object",
-        "required": [
-          "shot_date",
-          "file_name",
-          "original_sha256",
-          "uploading_images",
-          "properties"
-        ],
-        "properties": {
-          "file_name": {
-            "type": "string",
-            "description": "The file name of the original picture.\nThis is also used for the part of identification, but any arbitary string can be specified.",
-            "example": "IMG_0001.JPG"
-          },
-          "original_sha256": {
-            "type": "string",
-            "description": "The hexadecimal representation of SHA256 hash.",
-            "example": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-            "maxLength": 64,
-            "minLength": 64
-          },
-          "properties": {
-            "$ref": "#/components/schemas/PropertiesSchema"
-          },
-          "shot_date": {
-            "type": "string",
-            "description": "The datetime the photo was taken.\nThe shot timstamp is used for the part of identification and indexing.",
-            "example": "2026-01-02T03:45:06+09:00"
-          },
-          "uploading_images": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/NewImages"
-            },
-            "description": "The list of dimensions of the images to be uploaded later.\nEach images will get each image ID assigned for the later upload."
-          }
-        }
-      },
       "NewPhotoResponse": {
         "type": "object",
-        "required": ["id", "images", "max_parallelism"],
+        "required": ["photo"],
         "properties": {
-          "id": {
-            "type": "string",
-            "description": "Identifier assigned to the created photo.",
-            "example": "202601_img_0001_jpg-01AAAA"
-          },
-          "images": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/NewPhotoImageResponse"
-            },
-            "description": "The list of identifiers assigned to the specified images.\nThe image ID is used to upload the actual image later."
-          },
-          "max_parallelism": {
-            "type": "integer",
-            "format": "int32",
-            "description": "How much of parallel upload is accepted for the upload of this image.",
-            "minimum": 0
+          "photo": {
+            "$ref": "#/components/schemas/PhotoScheme"
           }
         }
       },
       "PhotoImages": {
         "type": "object",
-        "required": ["image_id", "name", "ext", "width", "height"],
+        "required": ["image_id", "ext", "width", "height"],
         "properties": {
           "ext": {
             "type": "string",
@@ -501,10 +362,6 @@
             "minimum": 0
           },
           "image_id": {
-            "type": "string",
-            "example": "01AAAA"
-          },
-          "name": {
             "type": "string",
             "example": "1080p"
           },
@@ -524,7 +381,8 @@
           "month",
           "original_sha256",
           "images",
-          "shot_time"
+          "shot_time",
+          "representative_color"
         ],
         "properties": {
           "id": {
@@ -544,6 +402,9 @@
           "original_sha256": {
             "type": "string"
           },
+          "representative_color": {
+            "type": "string"
+          },
           "shot_time": {
             "type": "string"
           },
@@ -555,7 +416,13 @@
       },
       "PhotoScheme": {
         "type": "object",
-        "required": ["id", "original_sha256", "images", "properties"],
+        "required": [
+          "id",
+          "original_sha256",
+          "images",
+          "representative_color",
+          "properties"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -578,6 +445,9 @@
           },
           "properties": {
             "$ref": "#/components/schemas/PropertiesSchema"
+          },
+          "representative_color": {
+            "type": "string"
           }
         }
       },
@@ -599,7 +469,7 @@
             "type": ["array", "null"],
             "items": {
               "type": "number",
-              "format": "float"
+              "format": "double"
             },
             "example": [36.123456, 138.123456],
             "maxItems": 2,
@@ -711,75 +581,16 @@
         "properties": {
           "response": {
             "type": "object",
-            "required": ["id", "images", "max_parallelism"],
+            "required": ["photo"],
             "properties": {
-              "id": {
-                "type": "string",
-                "description": "Identifier assigned to the created photo.",
-                "example": "202601_img_0001_jpg-01AAAA"
-              },
-              "images": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/NewPhotoImageResponse"
-                },
-                "description": "The list of identifiers assigned to the specified images.\nThe image ID is used to upload the actual image later."
-              },
-              "max_parallelism": {
-                "type": "integer",
-                "format": "int32",
-                "description": "How much of parallel upload is accepted for the upload of this image.",
-                "minimum": 0
+              "photo": {
+                "$ref": "#/components/schemas/PhotoScheme"
               }
             }
           },
           "status": {
             "type": "string",
             "example": "okay"
-          }
-        }
-      },
-      "SuccessfulResponse_UploadImageResponse": {
-        "type": "object",
-        "required": ["status", "response"],
-        "properties": {
-          "response": {
-            "type": "object",
-            "required": ["id", "max_parallelism"],
-            "properties": {
-              "id": {
-                "type": "string",
-                "description": "Identifier assigned to the created photo.",
-                "example": "202601_img_0001_jpg-01AAAA"
-              },
-              "max_parallelism": {
-                "type": "integer",
-                "format": "int32",
-                "description": "How much of parallel upload is accepted for the upload of this image.",
-                "minimum": 0
-              }
-            }
-          },
-          "status": {
-            "type": "string",
-            "example": "okay"
-          }
-        }
-      },
-      "UploadImageResponse": {
-        "type": "object",
-        "required": ["id", "max_parallelism"],
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Identifier assigned to the created photo.",
-            "example": "202601_img_0001_jpg-01AAAA"
-          },
-          "max_parallelism": {
-            "type": "integer",
-            "format": "int32",
-            "description": "How much of parallel upload is accepted for the upload of this image.",
-            "minimum": 0
           }
         }
       }

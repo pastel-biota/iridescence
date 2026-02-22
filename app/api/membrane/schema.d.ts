@@ -78,11 +78,7 @@ export interface paths {
      */
     get: operations["get_image"];
     put?: never;
-    /**
-     * Registers a new photo
-     * @description Register a new photo, and prepare for the upload for the actual image.
-     */
-    post: operations["upload_image"];
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -136,69 +132,8 @@ export interface components {
       height: number;
       id: string;
     };
-    NewImages: {
-      /** @example jpg */
-      ext: string;
-      /**
-       * Format: int32
-       * @example 1080
-       */
-      height: number;
-      /** @example 1080p */
-      name: string;
-      /**
-       * Format: int32
-       * @example 1920
-       */
-      width: number;
-    };
-    NewPhotoImageResponse: {
-      /** @example 01AAAA */
-      image_id: string;
-      /** @example 1080p */
-      name: string;
-    };
-    NewPhotoParam: {
-      /**
-       * @description The file name of the original picture.
-       *     This is also used for the part of identification, but any arbitary string can be specified.
-       * @example IMG_0001.JPG
-       */
-      file_name: string;
-      /**
-       * @description The hexadecimal representation of SHA256 hash.
-       * @example e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-       */
-      original_sha256: string;
-      properties: components["schemas"]["PropertiesSchema"];
-      /**
-       * @description The datetime the photo was taken.
-       *     The shot timstamp is used for the part of identification and indexing.
-       * @example 2026-01-02T03:45:06+09:00
-       */
-      shot_date: string;
-      /**
-       * @description The list of dimensions of the images to be uploaded later.
-       *     Each images will get each image ID assigned for the later upload.
-       */
-      uploading_images: components["schemas"]["NewImages"][];
-    };
     NewPhotoResponse: {
-      /**
-       * @description Identifier assigned to the created photo.
-       * @example 202601_img_0001_jpg-01AAAA
-       */
-      id: string;
-      /**
-       * @description The list of identifiers assigned to the specified images.
-       *     The image ID is used to upload the actual image later.
-       */
-      images: components["schemas"]["NewPhotoImageResponse"][];
-      /**
-       * Format: int32
-       * @description How much of parallel upload is accepted for the upload of this image.
-       */
-      max_parallelism: number;
+      photo: components["schemas"]["PhotoScheme"];
     };
     PhotoImages: {
       /** @example jpg */
@@ -208,10 +143,8 @@ export interface components {
        * @example 1080
        */
       height: number;
-      /** @example 01AAAA */
-      image_id: string;
       /** @example 1080p */
-      name: string;
+      image_id: string;
       /**
        * Format: int32
        * @example 1920
@@ -224,6 +157,7 @@ export interface components {
       /** Format: int32 */
       month: number;
       original_sha256: string;
+      representative_color: string;
       shot_time: string;
       /** Format: int32 */
       year: number;
@@ -245,6 +179,7 @@ export interface components {
        */
       original_sha256: string;
       properties: components["schemas"]["PropertiesSchema"];
+      representative_color: string;
     };
     PropertiesSchema: {
       /**
@@ -314,52 +249,10 @@ export interface components {
     };
     SuccessfulResponse_NewPhotoResponse: {
       response: {
-        /**
-         * @description Identifier assigned to the created photo.
-         * @example 202601_img_0001_jpg-01AAAA
-         */
-        id: string;
-        /**
-         * @description The list of identifiers assigned to the specified images.
-         *     The image ID is used to upload the actual image later.
-         */
-        images: components["schemas"]["NewPhotoImageResponse"][];
-        /**
-         * Format: int32
-         * @description How much of parallel upload is accepted for the upload of this image.
-         */
-        max_parallelism: number;
+        photo: components["schemas"]["PhotoScheme"];
       };
       /** @example okay */
       status: string;
-    };
-    SuccessfulResponse_UploadImageResponse: {
-      response: {
-        /**
-         * @description Identifier assigned to the created photo.
-         * @example 202601_img_0001_jpg-01AAAA
-         */
-        id: string;
-        /**
-         * Format: int32
-         * @description How much of parallel upload is accepted for the upload of this image.
-         */
-        max_parallelism: number;
-      };
-      /** @example okay */
-      status: string;
-    };
-    UploadImageResponse: {
-      /**
-       * @description Identifier assigned to the created photo.
-       * @example 202601_img_0001_jpg-01AAAA
-       */
-      id: string;
-      /**
-       * Format: int32
-       * @description How much of parallel upload is accepted for the upload of this image.
-       */
-      max_parallelism: number;
     };
   };
   responses: never;
@@ -413,7 +306,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["NewPhotoParam"];
+        "application/octet-stream": components["schemas"]["BinaryBody"];
       };
     };
     responses: {
@@ -428,6 +321,15 @@ export interface operations {
       };
       /** @description The parameter/body was invalid */
       400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClientError"];
+        };
+      };
+      /** @description There already was a photo registered with the matching hash */
+      409: {
         headers: {
           [name: string]: unknown;
         };
@@ -520,42 +422,6 @@ export interface operations {
         };
         content: {
           "application/octet-stream": components["schemas"]["BinaryBody"];
-        };
-      };
-      /** @description The parameter/body was invalid */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ClientError"];
-        };
-      };
-    };
-  };
-  upload_image: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        photo_id: string;
-        image_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/octet-stream": components["schemas"]["BinaryBody"];
-      };
-    };
-    responses: {
-      /** @description The image was uploaded. */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["SuccessfulResponse_UploadImageResponse"];
         };
       };
       /** @description The parameter/body was invalid */

@@ -30,6 +30,7 @@ export function mapPhotoReference(
 ): PhotoReference {
   return {
     id: photo.id,
+    representativeColor: photo.representative_color,
     images: photo.images.map((image) => mapImageReference(photo.id, image)),
   };
 }
