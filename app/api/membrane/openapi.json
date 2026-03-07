@@ -323,7 +323,7 @@
       },
       "ImageReferenceSchema": {
         "type": "object",
-        "required": ["id", "height", "ext"],
+        "required": ["id", "width", "height", "ext", "mime"],
         "properties": {
           "ext": {
             "type": "string"
@@ -335,6 +335,14 @@
           },
           "id": {
             "type": "string"
+          },
+          "mime": {
+            "type": "string"
+          },
+          "width": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
           }
         }
       },
@@ -349,7 +357,7 @@
       },
       "PhotoImages": {
         "type": "object",
-        "required": ["image_id", "ext", "width", "height"],
+        "required": ["image_id", "ext", "mime", "width", "height"],
         "properties": {
           "ext": {
             "type": "string",
@@ -364,6 +372,10 @@
           "image_id": {
             "type": "string",
             "example": "1080p"
+          },
+          "mime": {
+            "type": "string",
+            "example": "image/jpeg"
           },
           "width": {
             "type": "integer",
@@ -420,6 +432,7 @@
           "id",
           "original_sha256",
           "images",
+          "shot_datetime",
           "representative_color",
           "properties"
         ],
@@ -447,6 +460,10 @@
             "$ref": "#/components/schemas/PropertiesSchema"
           },
           "representative_color": {
+            "type": "string",
+            "example": "#123456"
+          },
+          "shot_datetime": {
             "type": "string"
           }
         }

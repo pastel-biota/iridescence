@@ -2,11 +2,32 @@ import type { FC, ReactNode } from "react";
 import { css } from "styled-system/css";
 import { hstack, vstack } from "styled-system/patterns";
 
+type Props = {
+  children: ReactNode;
+};
+
+export const MainLayout: FC<Props> = ({ children }) => {
+  return (
+    <div className={root}>
+      <header className={header}>
+        <hgroup className={logo}>
+          <h1 className={logoServiceName}>Iris</h1>
+          <p className={logoServiceType}>Photobook</p>
+        </hgroup>
+        <p className={pastelBiota}>Part of the pastel biota</p>
+      </header>
+      {children}
+    </div>
+  );
+};
+
 const root = vstack({
-  paddingX: 48,
-  paddingY: 36,
+  paddingX: 60,
+  paddingY: 48,
   gap: 60,
   alignItems: "start",
+  maxWidth: "2000px",
+  marginInline: "auto",
 });
 
 const header = hstack({
@@ -40,22 +61,3 @@ const pastelBiota = css({
   fontSize: "xs",
   color: "brand.primary",
 });
-
-type Props = {
-  children: ReactNode;
-};
-
-export const MainLayout: FC<Props> = ({ children }) => {
-  return (
-    <div className={root}>
-      <header className={header}>
-        <hgroup className={logo}>
-          <h1 className={logoServiceName}>Iris</h1>
-          <p className={logoServiceType}>Photobook</p>
-        </hgroup>
-        <p className={pastelBiota}>Part of the pastel biota</p>
-      </header>
-      {children}
-    </div>
-  );
-};

@@ -1,7 +1,9 @@
 import { type FC, type ReactNode, useState } from "react";
-import { css, type Styles } from "styled-system/css";
+import { Link } from "react-router";
+import { css, cva, type Styles } from "styled-system/css";
 import { hstack } from "styled-system/patterns";
 
+import { useViewTransitionFlags } from "~/lib/view-transition";
 import type { PhotoProperties } from "~/models";
 
 import { usePhotoDetail } from "./query";
@@ -21,23 +23,26 @@ export const PhotoTile: FC<Props> = ({
 }) => {
   const [hovered, setHovered] = useState(false);
   const photo = usePhotoDetail(photoId, hovered);
+  const { offPage } = useViewTransitionFlags(`/photos/${photoId}`);
 
   return (
-    <article
-      className={`${root} group`}
-      style={{
-        backgroundColor: fallbackColor,
-        backgroundImage: `url(${blurUrl})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-      onMouseEnter={() => {
-        setHovered(true);
-      }}
-    >
-      <img src={thumbnailUrl} className={img} />
-      <PropertyPanel properties={photo.data?.properties} styles={panel} />
-    </article>
+    <Link to={`/photos/${photoId}`} viewTransition preventScrollReset>
+      <article
+        className={`${root} group`}
+        style={{
+          backgroundColor: fallbackColor,
+          backgroundImage: `url(${blurUrl})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+        onMouseEnter={() => {
+          setHovered(true);
+        }}
+      >
+        <img src={thumbnailUrl} className={img({ isTransitioning: offPage })} />
+        <PropertyPanel properties={photo.data?.properties} styles={panel} />
+      </article>
+    </Link>
   );
 };
 
@@ -47,7 +52,21 @@ const root = css({
   height: "100%",
   overflow: "hidden",
 });
-const img = css({ width: "100%", height: "100%", objectFit: "cover" });
+
+const img = cva({
+  base: {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+  },
+  variants: {
+    isTransitioning: {
+      true: {
+        viewTransitionName: "image",
+      },
+    },
+  },
+});
 
 const panel = css.raw({
   transform: {

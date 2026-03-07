@@ -46,8 +46,8 @@ export const PhotoGrid: FC<Props> = ({ photos, onMoreRequested }) => {
   }, [handleViewIn]);
 
   return (
-    <div>
-      <ol className={root}>
+    <div className={root}>
+      <ol className={photoGrid}>
         {photos.map((photo) => {
           const thumbnail = photo.images.find(({ id }) => id === "thumbnail");
           const icon = photo.images.find(({ id }) => id === "icon");
@@ -76,10 +76,13 @@ export const PhotoGrid: FC<Props> = ({ photos, onMoreRequested }) => {
   );
 };
 
-const root = grid({
-  gridTemplateColumns: "repeat(auto-fill, minmax(max(24%, 250px), 1fr))",
-  width: "100%",
-  maxWidth: "1600px",
+const root = css({
   marginInline: "auto",
+  width: "100%",
+});
+
+const photoGrid = grid({
+  gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+  width: "100%",
   gap: "4px",
 });

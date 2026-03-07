@@ -7,6 +7,7 @@ import {
   fontWeights,
   lineHeights,
 } from "~/styles/theme/font";
+import { letterSpacings } from "~/styles/theme/letterSpacing";
 
 export default defineConfig({
   // Whether to use css reset
@@ -26,6 +27,7 @@ export default defineConfig({
       fontSizes,
       fontWeights,
       lineHeights,
+      letterSpacings,
     },
     semanticTokens: {
       colors: semanticColorToken,

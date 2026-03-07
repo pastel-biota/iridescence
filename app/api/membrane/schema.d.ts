@@ -131,6 +131,9 @@ export interface components {
       /** Format: int32 */
       height: number;
       id: string;
+      mime: string;
+      /** Format: int32 */
+      width: number;
     };
     NewPhotoResponse: {
       photo: components["schemas"]["PhotoScheme"];
@@ -145,6 +148,8 @@ export interface components {
       height: number;
       /** @example 1080p */
       image_id: string;
+      /** @example image/jpeg */
+      mime: string;
       /**
        * Format: int32
        * @example 1920
@@ -179,7 +184,9 @@ export interface components {
        */
       original_sha256: string;
       properties: components["schemas"]["PropertiesSchema"];
+      /** @example #123456 */
       representative_color: string;
+      shot_datetime: string;
     };
     PropertiesSchema: {
       /**

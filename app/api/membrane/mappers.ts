@@ -18,10 +18,14 @@ export function mapPhoto(photo: components["schemas"]["PhotoScheme"]): Photo {
         // TODO: This is painful! Refactor to the complete subset on the backend
         id: image.image_id,
         ext: image.ext,
+        width: image.width,
         height: image.height,
+        mime: image.mime,
       }),
     ),
+    shotTime: new Date(photo.shot_datetime),
     properties: photoProperties.safeParse(photo.properties).data,
+    representativeColor: photo.representative_color,
   };
 }
 
@@ -42,6 +46,7 @@ export function mapImageReference(
   return {
     id: imageMeta.id,
     ext: imageMeta.ext,
+    width: imageMeta.width,
     height: imageMeta.height,
     imageUrl: getImageServeUrl(photoId, imageMeta.id),
   };

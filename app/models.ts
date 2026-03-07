@@ -1,6 +1,8 @@
 export type Photo = {
   id: string;
   images: ImageMeta[];
+  representativeColor: string;
+  shotTime: Date;
   properties: PhotoProperties | undefined;
 };
 
@@ -13,6 +15,7 @@ export type PhotoReference = {
 export type ImageMeta = {
   id: string;
   ext: string;
+  width: number;
   height: number;
   imageUrl: string;
 };

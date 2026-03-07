@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { Outlet } from "react-router";
 
 import { PhotoGrid } from "~/features/tile/components/PhotoGrid/PhotoGrid";
 import { MainLayout } from "~/layouts/MainLayout";
@@ -25,6 +26,8 @@ export default function Index() {
 
   return (
     <MainLayout>
+      {/* Image detail overlay comes to here */}
+      <Outlet />
       {photos && <PhotoGrid photos={photos} onMoreRequested={handleMore} />}
     </MainLayout>
   );
