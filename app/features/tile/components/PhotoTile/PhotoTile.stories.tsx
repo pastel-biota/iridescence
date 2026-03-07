@@ -16,23 +16,10 @@ type Story = StoryObj<typeof meta>;
 
 export const Ideal: Story = {
   args: {
+    photoId: "",
+    blurUrl: "https://picsum.photos/id/1024/32/24",
     thumbnailUrl: "https://picsum.photos/id/1024/1920/1080",
-    className: "",
-    colSpan: 1,
-    rowSpan: 1,
-    title: {
-      jp: "みはらしの丘",
-      en: "Miharashi Hill",
-    },
-    properties: {
-      camera: "FUJIFILM X-T4",
-      aperture: 3.6,
-      shatter: 8,
-      iso: 320,
-      exposure: -2.1,
-      focus: 42.0,
-      // FUJIFILM X-T4 F/3.6 1/8 ISO 320 EXP. -2.1 42.00 mm
-    },
+    fallbackColor: "#ff0000",
   },
   decorators: (Story) => {
     return (
