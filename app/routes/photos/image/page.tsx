@@ -1,21 +1,34 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { css, cva } from "styled-system/css";
 import { grid, hstack, vstack } from "styled-system/patterns";
 
 import { PropertyValue } from "~/features/photo/components/PropertyValue/PropertyValue";
 import { useViewTransitionFlags } from "~/lib/view-transition";
+import { queryClient } from "~/provider";
 
 import type { Route } from "./+types/page";
-import { usePhotoDetail } from "./query";
+import { photoDetailQuery } from "./query";
 
-export default function ImageDetailPage({ params: { id } }: Route.MetaArgs) {
-  const { data: photo } = usePhotoDetail(id);
+export const loader = async (ctx: Route.LoaderArgs) => {
+  const id = ctx.params.id;
+  const photo = await queryClient.ensureQueryData(photoDetailQuery(id));
+  console.log(`Prefetched for ${id}`);
+
+  return photo;
+};
+
+export default function ImageDetailPage({
+  params: { id },
+  loaderData,
+}: Route.MetaArgs) {
+  const { data: photo } = useQuery({
+    ...photoDetailQuery(id),
+    initialData: loaderData,
+  });
   const { onPage } = useViewTransitionFlags(`/photos/${id}`);
 
-  if (photo == null) {
-    throw new Error("I need to implement server side preloading");
-  }
-
+  const blur = photo.images.find((image) => image.id == "icon");
   const main = photo.images.find((image) => image.id == "main");
 
   if (main === undefined) {
@@ -44,6 +57,12 @@ export default function ImageDetailPage({ params: { id } }: Route.MetaArgs) {
           height={main.height}
           // src={"https://picsum.photos/id/120/1920/1080"}
           className={mainImage({ transitioningOff: onPage })}
+          style={{
+            background: blur && `url(${blur.imageUrl})`,
+            backgroundColor: photo.representativeColor,
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+          }}
         />
         <aside className={properties}>
           <div className={fundamentalPhotoInfo}>
@@ -111,14 +130,30 @@ const root = vstack({
   position: "fixed",
   inset: 0,
   zIndex: 1,
-  padding: "96px",
+  padding: {
+    base: "20px",
+    sm: "96px",
+  },
   justifyContent: "center",
 });
 
 const content = grid({
-  gridTemplateRows: "minmax(0, 1fr)",
-  gridTemplateColumns: "3fr 1fr",
-  alignItems: "start",
+  gridTemplateRows: {
+    base: "1fr auto",
+    sm: "minmax(0, 1fr)",
+  },
+  gridTemplateColumns: {
+    base: "1fr",
+    sm: "3fr 1fr",
+  },
+  height: {
+    base: "100%",
+    sm: "auto",
+  },
+  alignItems: {
+    base: "center",
+    sm: "start",
+  },
   gap: "64px",
   width: "max-content",
   maxWidth: "100%",
@@ -140,8 +175,6 @@ const overlay = css({
 
 const mainImage = cva({
   base: {
-    width: "auto",
-    height: "auto",
     maxHeight: "100%",
     objectFit: "contain",
     objectPosition: "center",
@@ -159,7 +192,10 @@ const mainImage = cva({
 
 const properties = vstack({
   alignItems: "start",
-  gap: "24px",
+  gap: {
+    base: "4px",
+    sm: "24px",
+  },
   pointerEvents: "auto",
 });
 

@@ -82,7 +82,10 @@ const root = css({
 });
 
 const photoGrid = grid({
-  gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+  gridTemplateColumns: {
+    base: "repeat(auto-fill, minmax(150px, 1fr))",
+    sm: "repeat(auto-fill, minmax(250px, 1fr))",
+  },
   width: "100%",
   gap: "4px",
 });

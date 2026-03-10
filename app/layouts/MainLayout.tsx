@@ -22,9 +22,18 @@ export const MainLayout: FC<Props> = ({ children }) => {
 };
 
 const root = vstack({
-  paddingX: 60,
-  paddingY: 48,
-  gap: 60,
+  paddingX: {
+    base: 4,
+    sm: 60,
+  },
+  paddingY: {
+    base: 10,
+    sm: 48,
+  },
+  gap: {
+    base: 0,
+    sm: 60,
+  },
   alignItems: "start",
   maxWidth: "2000px",
   marginInline: "auto",
@@ -33,7 +42,11 @@ const root = vstack({
 const header = hstack({
   width: "100%",
   justifyContent: "space-between",
-  paddingY: 12,
+  paddingY: 32,
+  paddingX: {
+    base: 32,
+    sm: 0,
+  },
 });
 
 const logo = vstack({
