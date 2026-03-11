@@ -189,6 +189,37 @@
         }
       }
     },
+    "/photos/{photo_id}/images": {
+      "put": {
+        "summary": "Reprocess the photos. This fills up the missing images.",
+        "operationId": "reprocess",
+        "parameters": [
+          {
+            "name": "photo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The photo had unprocessed image(s) and was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessfulResponse_ReprocessResponse"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "All defined images were already creted"
+          }
+        }
+      }
+    },
     "/photos/{photo_id}/images/{image_id}": {
       "get": {
         "summary": "Get actual image",
@@ -321,43 +352,9 @@
           }
         }
       },
-      "ImageReferenceSchema": {
+      "ImageMetaScheme": {
         "type": "object",
-        "required": ["id", "width", "height", "ext", "mime"],
-        "properties": {
-          "ext": {
-            "type": "string"
-          },
-          "height": {
-            "type": "integer",
-            "format": "int32",
-            "minimum": 0
-          },
-          "id": {
-            "type": "string"
-          },
-          "mime": {
-            "type": "string"
-          },
-          "width": {
-            "type": "integer",
-            "format": "int32",
-            "minimum": 0
-          }
-        }
-      },
-      "NewPhotoResponse": {
-        "type": "object",
-        "required": ["photo"],
-        "properties": {
-          "photo": {
-            "$ref": "#/components/schemas/PhotoScheme"
-          }
-        }
-      },
-      "PhotoImages": {
-        "type": "object",
-        "required": ["image_id", "ext", "mime", "width", "height"],
+        "required": ["ext", "mime", "width", "height"],
         "properties": {
           "ext": {
             "type": "string",
@@ -369,10 +366,6 @@
             "example": 1080,
             "minimum": 0
           },
-          "image_id": {
-            "type": "string",
-            "example": "1080p"
-          },
           "mime": {
             "type": "string",
             "example": "image/jpeg"
@@ -382,6 +375,15 @@
             "format": "int32",
             "example": 1920,
             "minimum": 0
+          }
+        }
+      },
+      "NewPhotoResponse": {
+        "type": "object",
+        "required": ["photo"],
+        "properties": {
+          "photo": {
+            "$ref": "#/components/schemas/PhotoScheme"
           }
         }
       },
@@ -401,9 +403,12 @@
             "type": "string"
           },
           "images": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ImageReferenceSchema"
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ImageMetaScheme"
+            },
+            "propertyNames": {
+              "type": "string"
             }
           },
           "month": {
@@ -443,11 +448,14 @@
             "example": "202601_img_0001_jpg-01AAAA"
           },
           "images": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PhotoImages"
+            "type": "object",
+            "description": "The list of identifiers assigned to the specified images.\nThe image ID is used to upload the actual image later.",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ImageMetaScheme"
             },
-            "description": "The list of identifiers assigned to the specified images.\nThe image ID is used to upload the actual image later."
+            "propertyNames": {
+              "type": "string"
+            }
           },
           "original_sha256": {
             "type": "string",
@@ -516,6 +524,9 @@
             "example": true
           }
         }
+      },
+      "ReprocessResponse": {
+        "default": null
       },
       "SuccessfulResponse_GetImagesListResponse": {
         "type": "object",
@@ -604,6 +615,19 @@
                 "$ref": "#/components/schemas/PhotoScheme"
               }
             }
+          },
+          "status": {
+            "type": "string",
+            "example": "okay"
+          }
+        }
+      },
+      "SuccessfulResponse_ReprocessResponse": {
+        "type": "object",
+        "required": ["status", "response"],
+        "properties": {
+          "response": {
+            "default": null
           },
           "status": {
             "type": "string",

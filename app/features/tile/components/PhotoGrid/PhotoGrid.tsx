@@ -2,6 +2,7 @@ import { type FC, useCallback, useEffect, useRef } from "react";
 import { css } from "styled-system/css";
 import { grid } from "styled-system/patterns";
 
+import { expectIndex } from "~/lib/data/expect-index";
 import type { PhotoReference } from "~/models";
 
 import { PhotoTile } from "../PhotoTile/PhotoTile";
@@ -24,10 +25,10 @@ export const PhotoGrid: FC<Props> = ({ photos, onMoreRequested }) => {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries.length !== 1) {
+        const entry = entries[0];
+        if (entry === undefined || entries.length !== 1) {
           throw new Error("Observing nothing or more than expected");
         }
-        const entry = entries[0];
 
         if (entry.intersectionRatio >= 1) {
           handleViewIn();
@@ -49,15 +50,8 @@ export const PhotoGrid: FC<Props> = ({ photos, onMoreRequested }) => {
     <div className={root}>
       <ol className={photoGrid}>
         {photos.map((photo) => {
-          const thumbnail = photo.images.find(({ id }) => id === "thumbnail");
-          const icon = photo.images.find(({ id }) => id === "icon");
-
-          if (thumbnail == null) {
-            throw new Error("Expected to have the thumbnail image");
-          }
-          if (icon == null) {
-            throw new Error("Expected to have the icon image");
-          }
+          const thumbnail = expectIndex(photo.images, "thumbnail");
+          const icon = expectIndex(photo.images, "icon");
 
           return (
             <li className={css({ aspectRatio: 1 })} key={photo.id}>

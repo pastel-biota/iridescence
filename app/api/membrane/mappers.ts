@@ -1,5 +1,6 @@
 import z from "zod/v4";
 
+import { mapObject } from "~/lib/data/map-object";
 import type {
   ImageMeta,
   Photo,
@@ -13,15 +14,8 @@ import { getImageServeUrl } from "./url";
 export function mapPhoto(photo: components["schemas"]["PhotoScheme"]): Photo {
   return {
     id: photo.id,
-    images: photo.images.map((image) =>
-      mapImageReference(photo.id, {
-        // TODO: This is painful! Refactor to the complete subset on the backend
-        id: image.image_id,
-        ext: image.ext,
-        width: image.width,
-        height: image.height,
-        mime: image.mime,
-      }),
+    images: mapObject(photo.images, (key, image) =>
+      mapImageReference(photo.id, key, image),
     ),
     shotTime: new Date(photo.shot_datetime),
     properties: photoProperties.safeParse(photo.properties).data,
@@ -35,20 +29,22 @@ export function mapPhotoReference(
   return {
     id: photo.id,
     representativeColor: photo.representative_color,
-    images: photo.images.map((image) => mapImageReference(photo.id, image)),
+    images: mapObject(photo.images, (key, image) =>
+      mapImageReference(photo.id, key, image),
+    ),
   };
 }
 
 export function mapImageReference(
   photoId: string,
-  imageMeta: components["schemas"]["ImageReferenceSchema"],
+  imageId: string,
+  imageMeta: components["schemas"]["ImageMetaScheme"],
 ): ImageMeta {
   return {
-    id: imageMeta.id,
     ext: imageMeta.ext,
     width: imageMeta.width,
     height: imageMeta.height,
-    imageUrl: getImageServeUrl(photoId, imageMeta.id),
+    imageUrl: getImageServeUrl(photoId, imageId),
   };
 }
 

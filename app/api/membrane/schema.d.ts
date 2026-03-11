@@ -65,6 +65,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/photos/{photo_id}/images": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Reprocess the photos. This fills up the missing images. */
+    put: operations["reprocess"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/photos/{photo_id}/images/{image_id}": {
     parameters: {
       query?: never;
@@ -126,19 +143,7 @@ export interface components {
         [key: string]: components["schemas"]["PhotoReferenceSchema"];
       };
     };
-    ImageReferenceSchema: {
-      ext: string;
-      /** Format: int32 */
-      height: number;
-      id: string;
-      mime: string;
-      /** Format: int32 */
-      width: number;
-    };
-    NewPhotoResponse: {
-      photo: components["schemas"]["PhotoScheme"];
-    };
-    PhotoImages: {
+    ImageMetaScheme: {
       /** @example jpg */
       ext: string;
       /**
@@ -146,8 +151,6 @@ export interface components {
        * @example 1080
        */
       height: number;
-      /** @example 1080p */
-      image_id: string;
       /** @example image/jpeg */
       mime: string;
       /**
@@ -156,9 +159,14 @@ export interface components {
        */
       width: number;
     };
+    NewPhotoResponse: {
+      photo: components["schemas"]["PhotoScheme"];
+    };
     PhotoReferenceSchema: {
       id: string;
-      images: components["schemas"]["ImageReferenceSchema"][];
+      images: {
+        [key: string]: components["schemas"]["ImageMetaScheme"];
+      };
       /** Format: int32 */
       month: number;
       original_sha256: string;
@@ -177,7 +185,9 @@ export interface components {
        * @description The list of identifiers assigned to the specified images.
        *     The image ID is used to upload the actual image later.
        */
-      images: components["schemas"]["PhotoImages"][];
+      images: {
+        [key: string]: components["schemas"]["ImageMetaScheme"];
+      };
       /**
        * @description The hexadecimal representation of SHA256 hash.
        * @example e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
@@ -223,6 +233,8 @@ export interface components {
       /** @example true */
       shutter_speed_controlled?: boolean | null;
     };
+    /** @default null */
+    ReprocessResponse: unknown;
     SuccessfulResponse_GetImagesListResponse: {
       response: {
         next_cursor?: string | null;
@@ -258,6 +270,12 @@ export interface components {
       response: {
         photo: components["schemas"]["PhotoScheme"];
       };
+      /** @example okay */
+      status: string;
+    };
+    SuccessfulResponse_ReprocessResponse: {
+      /** @default null */
+      response: unknown;
       /** @example okay */
       status: string;
     };
@@ -407,6 +425,35 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["ClientError"];
         };
+      };
+    };
+  };
+  reprocess: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        photo_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The photo had unprocessed image(s) and was created */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SuccessfulResponse_ReprocessResponse"];
+        };
+      };
+      /** @description All defined images were already creted */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
     };
   };

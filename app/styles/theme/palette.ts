@@ -30,7 +30,7 @@ export const SHADOWS = [
   [0.6409, 0.1447], // bg
   [0.5405, 0.1042], // fg
   [0.3302, 0.0526], // text
-];
+] as const;
 
 export function generateColorPalette(): [string, [string, string][]][] {
   return SHADES_LABEL.map(
@@ -51,7 +51,12 @@ export function generateColorPalette(): [string, [string, string][]][] {
 }
 
 export function generateOklch(hueIndex: number, shadowIndex: number): LCH {
-  const [luminescence, chroma] = SHADOWS[shadowIndex];
+  const shadow = SHADOWS[shadowIndex];
+  if (shadow === undefined) {
+    throw new TypeError(`Shadow index is out of range: ${String(shadowIndex)}`);
+  }
+  const [luminescence, chroma] = shadow;
+
   let hue = -4.28 + (hueIndex / SHADES) * 360;
 
   if (hue < 0) {

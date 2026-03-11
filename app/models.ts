@@ -1,6 +1,6 @@
 export type Photo = {
   id: string;
-  images: ImageMeta[];
+  images: Record<string, ImageMeta>;
   representativeColor: string;
   shotTime: Date;
   properties: PhotoProperties | undefined;
@@ -9,11 +9,10 @@ export type Photo = {
 export type PhotoReference = {
   id: string;
   representativeColor: string;
-  images: ImageMeta[];
+  images: Record<string, ImageMeta>;
 };
 
 export type ImageMeta = {
-  id: string;
   ext: string;
   width: number;
   height: number;

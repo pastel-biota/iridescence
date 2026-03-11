@@ -13,7 +13,6 @@ import { photoDetailQuery } from "./query";
 export const loader = async (ctx: Route.LoaderArgs) => {
   const id = ctx.params.id;
   const photo = await queryClient.ensureQueryData(photoDetailQuery(id));
-  console.log(`Prefetched for ${id}`);
 
   return photo;
 };
@@ -28,8 +27,8 @@ export default function ImageDetailPage({
   });
   const { onPage } = useViewTransitionFlags(`/photos/${id}`);
 
-  const blur = photo.images.find((image) => image.id == "icon");
-  const main = photo.images.find((image) => image.id == "main");
+  const blur = photo.images["icon"];
+  const main = photo.images["main"];
 
   if (main === undefined) {
     throw new Error("Expected to have main image");
