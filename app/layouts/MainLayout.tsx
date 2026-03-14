@@ -24,15 +24,15 @@ export const MainLayout: FC<Props> = ({ children }) => {
 const root = vstack({
   paddingX: {
     base: 4,
-    sm: 60,
+    sm: 48,
   },
   paddingY: {
-    base: 10,
+    base: 24,
     sm: 48,
   },
   gap: {
-    base: 0,
-    sm: 60,
+    base: 24,
+    sm: 24,
   },
   alignItems: "start",
   maxWidth: "2000px",
@@ -42,9 +42,8 @@ const root = vstack({
 const header = hstack({
   width: "100%",
   justifyContent: "space-between",
-  paddingY: 32,
   paddingX: {
-    base: 32,
+    base: 16,
     sm: 0,
   },
 });
