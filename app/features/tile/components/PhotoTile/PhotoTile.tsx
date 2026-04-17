@@ -1,11 +1,12 @@
 import { type FC, type ReactNode, useState } from "react";
 import { Link } from "react-router";
-import { css, cva, type Styles } from "styled-system/css";
+import { css, type Styles } from "styled-system/css";
 import { hstack } from "styled-system/patterns";
 
 import { useViewTransitionFlags } from "~/lib/view-transition";
 import type { PhotoProperties } from "~/models";
 
+import { TILE_VIEW_TRANSITION_NAME } from "../../style";
 import { usePhotoDetail } from "./query";
 
 type Props = {
@@ -34,12 +35,13 @@ export const PhotoTile: FC<Props> = ({
           backgroundImage: `url(${blurUrl})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
+          viewTransitionName: offPage ? TILE_VIEW_TRANSITION_NAME : undefined,
         }}
         onMouseEnter={() => {
           setHovered(true);
         }}
       >
-        <img src={thumbnailUrl} className={img({ isTransitioning: offPage })} />
+        <img src={thumbnailUrl} className={img} />
         <PropertyPanel properties={photo.data?.properties} styles={panel} />
       </article>
     </Link>
@@ -53,19 +55,10 @@ const root = css({
   overflow: "hidden",
 });
 
-const img = cva({
-  base: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-  },
-  variants: {
-    isTransitioning: {
-      true: {
-        viewTransitionName: "image",
-      },
-    },
-  },
+const img = css({
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
 });
 
 const panel = css.raw({
@@ -73,7 +66,7 @@ const panel = css.raw({
     base: "translateY(100%)",
     _groupHover: "translateY(0%)",
   },
-  transition: "150ms transform",
+  transition: "50ms transform",
 });
 
 type PropertiesPanelProps = {

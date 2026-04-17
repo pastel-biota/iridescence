@@ -8,6 +8,7 @@ import {
   lineHeights,
 } from "~/styles/theme/font";
 import { letterSpacings } from "~/styles/theme/letterSpacing";
+import { viewKeyframes, viewTransitionStyles } from "~/styles/view-transition";
 
 export default defineConfig({
   // Whether to use css reset
@@ -32,7 +33,10 @@ export default defineConfig({
     semanticTokens: {
       colors: semanticColorToken,
     },
+    keyframes: viewKeyframes,
   },
+
+  globalCss: viewTransitionStyles,
 
   // The output directory for your css system
   outdir: "styled-system",

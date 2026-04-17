@@ -7,6 +7,7 @@ import { reactRouter } from "@react-router/dev/vite";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vite";
+import { cloudflare } from "@cloudflare/vite-plugin";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 const dirname =
@@ -17,7 +18,11 @@ const isStorybook = process.argv[1]?.includes("storybook");
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
-  plugins: [!isStorybook && reactRouter(), tsconfigPaths()],
+  plugins: [
+    !isStorybook && reactRouter(),
+    cloudflare({ viteEnvironment: { name: "ssr" } }),
+    tsconfigPaths(),
+  ],
   css: {
     postcss: {
       plugins: [pandacss],

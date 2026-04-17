@@ -1,14 +1,41 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
-import { css, cva } from "styled-system/css";
+import { css } from "styled-system/css";
 import { grid, hstack, vstack } from "styled-system/patterns";
 
-import { PropertyValue } from "~/features/photo/components/PropertyValue/PropertyValue";
+import { mapPhoto } from "~/api/membrane/mappers";
+import { IRIDESCENCE_BASE_URL } from "~/configs/client";
+import { CopyText } from "~/experts/dom/components/CopyText";
+import { LocationProperty } from "~/features/photo/components/LocationProperty";
+import { PropertyValue } from "~/features/photo/components/PropertyValue";
+import { TILE_VIEW_TRANSITION_NAME } from "~/features/tile/style";
 import { useViewTransitionFlags } from "~/lib/view-transition";
 import { queryClient } from "~/provider";
 
 import type { Route } from "./+types/page";
 import { photoDetailQuery } from "./query";
+
+export function meta(args: Route.MetaArgs) {
+  const photo = mapPhoto(args.loaderData.response.photo);
+
+  const thumbnail = photo.images["thumbnail"];
+  if (thumbnail == null) {
+    throw new Error("Thought thumbnail exists but wasn't");
+  }
+
+  return [
+    {
+      name: "og:url",
+      content: `${IRIDESCENCE_BASE_URL}/photos/${args.params.id}/`,
+    },
+    { property: "og:title", content: "Iris // Photobook" },
+    { property: "og:type", content: "website" },
+    { property: "og:image", content: thumbnail.imageUrl },
+    { property: "og:image:width", content: thumbnail.width },
+    { property: "og:image:height", content: thumbnail.height },
+    { property: "og:image:type", content: thumbnail.mime },
+  ];
+}
 
 export const loader = async (ctx: Route.LoaderArgs) => {
   const id = ctx.params.id;
@@ -55,12 +82,13 @@ export default function ImageDetailPage({
           width={main.width}
           height={main.height}
           // src={"https://picsum.photos/id/120/1920/1080"}
-          className={mainImage({ transitioningOff: onPage })}
+          className={mainImage}
           style={{
             background: blur && `url(${blur.imageUrl})`,
-            backgroundColor: photo.representativeColor,
             backgroundPosition: "center",
-            backgroundSize: "cover",
+            backgroundSize: "contain",
+            backgroundRepeat: "no-repeat",
+            viewTransitionName: onPage ? TILE_VIEW_TRANSITION_NAME : undefined,
           }}
         />
         <aside className={properties}>
@@ -74,6 +102,11 @@ export default function ImageDetailPage({
             <time className={dateTime} dateTime={photo.shotTime.toISOString()}>
               {getYMDText(photo.shotTime)}
             </time>
+            <p className={idSection}>
+              <span className={idLabel}>ID</span>
+              <span className={idText}>{photo.id}</span>
+              <CopyText textToCopy={photo.id} />
+            </p>
           </div>
           <p className={vstack({ gap: 4, alignItems: "start" })}>
             <span className={cameraMachine}>{photo.properties?.machine}</span>
@@ -109,6 +142,7 @@ export default function ImageDetailPage({
               />
             )}
           </dl>
+          <LocationProperty latlng={photo.properties?.gpsLatLng} />
         </aside>
       </div>
     </div>
@@ -129,9 +163,13 @@ const root = vstack({
   position: "fixed",
   inset: 0,
   zIndex: 1,
-  padding: {
-    base: "20px",
-    sm: "96px",
+  paddingX: {
+    base: "4px",
+    sm: "3vw",
+  },
+  paddingY: {
+    base: "4px",
+    sm: "40px",
   },
   justifyContent: "center",
 });
@@ -153,7 +191,10 @@ const content = grid({
     base: "center",
     sm: "start",
   },
-  gap: "64px",
+  gap: {
+    base: "0",
+    sm: "2vw",
+  },
   width: "max-content",
   maxWidth: "100%",
   maxHeight: "100%",
@@ -172,21 +213,12 @@ const overlay = css({
   backdropFilter: "blur(128px)",
 });
 
-const mainImage = cva({
-  base: {
-    maxHeight: "100%",
-    objectFit: "contain",
-    objectPosition: "center",
-    pointerEvents: "auto",
-    marginInline: "auto",
-  },
-  variants: {
-    transitioningOff: {
-      true: {
-        viewTransitionName: "image",
-      },
-    },
-  },
+const mainImage = css({
+  maxHeight: "100%",
+  objectFit: "contain",
+  objectPosition: "center",
+  pointerEvents: "auto",
+  marginInline: "auto",
 });
 
 const properties = vstack({
@@ -195,22 +227,59 @@ const properties = vstack({
     base: "4px",
     sm: "24px",
   },
+  paddingX: {
+    base: "16px",
+    sm: "0px",
+  },
+  paddingBottom: {
+    base: "16px",
+    sm: "0px",
+  },
   pointerEvents: "auto",
+  /* maxHeight: "80vh",
+  height: "100%",
+  marginY: "auto", */
 });
 
 const fundamentalPhotoInfo = vstack({
   alignItems: "start",
   width: "100%",
+  gap: "2px",
 });
 
 const representativeColorBox = css({
   width: "40%",
   height: "4px",
+  marginBottom: "8px",
 });
 
 const dateTime = css({
   fontFamily: "en",
   letterSpacing: "pack",
+});
+
+const idSection = hstack({
+  alignItems: "baseline",
+  gap: "4px",
+});
+
+const idLabel = hstack({
+  color: "brand.identity",
+  fontFamily: "metrics",
+  fontSize: "xs",
+  lineHeight: "none",
+});
+
+const idText = css({
+  color: "brand.identity",
+  fontFamily: "metrics",
+  fontSize: "sm",
+  lineHeight: "none",
+  userSelect: "all",
+  display: {
+    base: "none",
+    sm: "inline",
+  },
 });
 
 const cameraMachine = css({

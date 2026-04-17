@@ -3,12 +3,12 @@ import { css } from "styled-system/css";
 import { grid } from "styled-system/patterns";
 
 import { expectIndex } from "~/lib/data/expect-index";
-import type { PhotoReference } from "~/models";
+import type { PhotoViewReference } from "~/models";
 
 import { PhotoTile } from "../PhotoTile/PhotoTile";
 
 type Props = {
-  photos: PhotoReference[];
+  photos: PhotoViewReference[];
   onMoreRequested: () => void;
 };
 
@@ -52,9 +52,18 @@ export const PhotoGrid: FC<Props> = ({ photos, onMoreRequested }) => {
         {photos.map((photo) => {
           const thumbnail = expectIndex(photo.images, "thumbnail");
           const icon = expectIndex(photo.images, "icon");
+          const [row, col] = photo.span;
 
           return (
-            <li className={css({ aspectRatio: 1 })} key={photo.id}>
+            <li
+              key={photo.id}
+              style={{
+                aspectRatio: `${col.toString()} / ${row.toString()}`,
+                gridRow: `span ${row.toString()}`,
+                gridColumn: `span ${col.toString()}`,
+                padding: "0 2px 2px 0",
+              }}
+            >
               <PhotoTile
                 photoId={photo.id}
                 thumbnailUrl={thumbnail.imageUrl}
@@ -73,13 +82,14 @@ export const PhotoGrid: FC<Props> = ({ photos, onMoreRequested }) => {
 const root = css({
   marginInline: "auto",
   width: "100%",
+  padding: "2px 0 0 2px",
 });
 
 const photoGrid = grid({
   gridTemplateColumns: {
     base: "repeat(auto-fill, minmax(150px, 1fr))",
-    sm: "repeat(auto-fill, minmax(250px, 1fr))",
+    sm: "repeat(auto-fill, minmax(200px, 1fr))",
   },
   width: "100%",
-  gap: "4px",
+  gap: "0px",
 });

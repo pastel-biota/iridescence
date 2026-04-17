@@ -14,6 +14,103 @@
     "version": "0.2.0"
   },
   "paths": {
+    "/auth/login": {
+      "post": {
+        "summary": "Get a photo's meta",
+        "description": "This is a new field. This initially returns implemented error.",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The photo was registered and ready for image upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessfulResponse_LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The parameter/body was invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/federation/health": {
+      "get": {
+        "summary": "Get a photo's meta",
+        "description": "This is a new field. This initially returns implemented error.",
+        "operationId": "ping",
+        "responses": {
+          "200": {
+            "description": "The photo was registered and ready for image upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessfulResponse_HealthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The parameter/body was invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/federation/photos": {
+      "get": {
+        "summary": "Get a photo's meta",
+        "description": "This is a new field. This initially returns implemented error.",
+        "operationId": "list",
+        "responses": {
+          "200": {
+            "description": "The photo was registered and ready for image upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessfulResponse_ListFederatedPhotoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The parameter/body was invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/photos": {
       "get": {
         "summary": "Get the list of images.",
@@ -352,6 +449,9 @@
           }
         }
       },
+      "HealthResponse": {
+        "type": "object"
+      },
       "ImageMetaScheme": {
         "type": "object",
         "required": ["ext", "mime", "width", "height"],
@@ -378,6 +478,39 @@
           }
         }
       },
+      "ListFederatedPhotoResponse": {
+        "type": "object",
+        "required": ["photos"],
+        "properties": {
+          "photos": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "LoginBody": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "password": {
+            "$ref": "#/components/schemas/Password"
+          },
+          "username": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "required": ["session_key"],
+        "properties": {
+          "session_key": {
+            "type": "string"
+          }
+        }
+      },
       "NewPhotoResponse": {
         "type": "object",
         "required": ["photo"],
@@ -386,6 +519,9 @@
             "$ref": "#/components/schemas/PhotoScheme"
           }
         }
+      },
+      "Password": {
+        "type": "string"
       },
       "PhotoReferenceSchema": {
         "type": "object",
@@ -399,6 +535,9 @@
           "representative_color"
         ],
         "properties": {
+          "federator": {
+            "type": ["string", "null"]
+          },
           "id": {
             "type": "string"
           },
@@ -442,6 +581,9 @@
           "properties"
         ],
         "properties": {
+          "federator": {
+            "type": ["string", "null"]
+          },
           "id": {
             "type": "string",
             "description": "Identifier assigned to the created photo.",
@@ -594,6 +736,60 @@
                 "propertyNames": {
                   "type": "string"
                 }
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "okay"
+          }
+        }
+      },
+      "SuccessfulResponse_HealthResponse": {
+        "type": "object",
+        "required": ["status", "response"],
+        "properties": {
+          "response": {
+            "type": "object"
+          },
+          "status": {
+            "type": "string",
+            "example": "okay"
+          }
+        }
+      },
+      "SuccessfulResponse_ListFederatedPhotoResponse": {
+        "type": "object",
+        "required": ["status", "response"],
+        "properties": {
+          "response": {
+            "type": "object",
+            "required": ["photos"],
+            "properties": {
+              "photos": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "okay"
+          }
+        }
+      },
+      "SuccessfulResponse_LoginResponse": {
+        "type": "object",
+        "required": ["status", "response"],
+        "properties": {
+          "response": {
+            "type": "object",
+            "required": ["session_key"],
+            "properties": {
+              "session_key": {
+                "type": "string"
               }
             }
           },

@@ -6,7 +6,9 @@ import type {
   Photo,
   PhotoProperties,
   PhotoReference,
+  PhotoViewReference,
 } from "~/models";
+import type { APIPhotoResponse } from "~/routes/api/photos";
 
 import type { components } from "./schema";
 import { getImageServeUrl } from "./url";
@@ -35,6 +37,19 @@ export function mapPhotoReference(
   };
 }
 
+export function mapPhotoViewReference(
+  photo: APIPhotoResponse["response"]["photos"][number],
+): PhotoViewReference {
+  return {
+    id: photo.id,
+    representativeColor: photo.representative_color,
+    images: mapObject(photo.images, (key, image) =>
+      mapImageReference(photo.id, key, image),
+    ),
+    span: [photo.rows, photo.cols],
+  };
+}
+
 export function mapImageReference(
   photoId: string,
   imageId: string,
@@ -42,6 +57,7 @@ export function mapImageReference(
 ): ImageMeta {
   return {
     ext: imageMeta.ext,
+    mime: imageMeta.mime,
     width: imageMeta.width,
     height: imageMeta.height,
     imageUrl: getImageServeUrl(photoId, imageId),
@@ -65,7 +81,6 @@ const photoProperties = z
     (external) =>
       ({
         version: 1,
-        gpsLngLat: external.gps_lng_lat ?? null,
         machine: external.machine,
         lens: external.lens,
         fNumber: external.f_number,
