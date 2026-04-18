@@ -1,8 +1,8 @@
-import { membraneQuery } from "~/api/membrane/client";
-import { mapPhoto } from "~/api/membrane/mappers";
+import { irisQuery } from "~/api/iris/client";
+import { mapPhoto } from "~/api/iris/mappers";
 
 export function usePhotoDetail(photoId: string, enabled: boolean) {
-  return membraneQuery.useQuery(
+  return irisQuery.useQuery(
     "get",
     "/photos/{photo_id}",
     {

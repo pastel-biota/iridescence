@@ -1,8 +1,8 @@
 import { inArray } from "drizzle-orm";
 import type { MergeDeep } from "type-fest";
 
-import { membraneClient } from "~/api/membrane/client";
-import type { components } from "~/api/membrane/schema";
+import { irisClient } from "~/api/iris/client";
+import type { components } from "~/api/iris/schema";
 import { json } from "~/experts/react-router/response";
 import { database } from "~/infra/db/init";
 import { photoConfig } from "~/infra/db/schema";
@@ -28,7 +28,7 @@ export type APIPhotoResponse = MergeDeep<
 export async function loader({ request }: Route.LoaderArgs) {
   const cursor = new URL(request.url).searchParams.get("cursor");
 
-  const photos = await membraneClient.GET("/photos", {
+  const photos = await irisClient.GET("/photos", {
     params: {
       query: {
         size: 30,

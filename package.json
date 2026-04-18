@@ -11,7 +11,7 @@
     "lint:fix": "react-router typegen && eslint . --fix --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "gen:api": "node scripts/retrieve-scheme.ts && openapi-typescript ./app/api/membrane/openapi.json -o ./app/api/membrane/schema.d.ts",
+    "gen:api": "node scripts/retrieve-scheme.ts && openapi-typescript ./app/api/iris/openapi.json -o ./app/api/iris/schema.d.ts",
     "prepare": "husky; panda codegen || true",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"

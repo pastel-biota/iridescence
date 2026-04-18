@@ -8,8 +8,8 @@ FROM base AS builder
 COPY . /app/
 RUN pnpm install --frozen-lockfile;
 
-ARG VITE_MEMBRANE_BASE_URL
-ENV VITE_MEMBRANE_BASE_URL=${VITE_MEMBRANE_BASE_URL}
+ARG VITE_IRIS_BASE_URL
+ENV VITE_IRIS_BASE_URL=${VITE_IRIS_BASE_URL}
 RUN pnpm run build;
 
 FROM base

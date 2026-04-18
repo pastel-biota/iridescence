@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { css } from "styled-system/css";
 import { grid, hstack, vstack } from "styled-system/patterns";
 
-import { mapPhoto } from "~/api/membrane/mappers";
+import { mapPhoto } from "~/api/iris/mappers";
 import { IRIDESCENCE_BASE_URL } from "~/configs/client";
 import { CopyText } from "~/experts/dom/components/CopyText";
 import { LocationProperty } from "~/features/photo/components/LocationProperty";
