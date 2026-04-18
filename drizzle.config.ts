@@ -1,13 +1,17 @@
 import { defineConfig } from "drizzle-kit";
+import { loadEnv } from "~/configs/server";
+
+const env = loadEnv();
 
 export default defineConfig({
   out: "./.drizzle",
   schema: "./app/infra/db/schema.ts",
-  dialect: "sqlite",
-  driver: "d1-http",
+  dialect: "postgresql",
   dbCredentials: {
-    accountId: process.env.CLOUDFLARE_ACCOUNT_ID!,
-    databaseId: process.env.CLOUDFLARE_DATABASE_ID!,
-    token: process.env.CLOUDFLARE_D1_TOKEN!,
+    host: env.PG_HOST,
+    port: env.PG_PORT,
+    user: env.PG_USER,
+    database: env.PG_DATABASE,
+    password: env.PG_PASSWORD,
   },
 });

@@ -1,0 +1,24 @@
+# This is for the local development
+
+services:
+  db:
+    # postgres:18.3-alpine3.22
+    image: postgres@sha256:210f0b6ecb46f241fa1fc3ee63c430b0eb2d0c5141ddd26753299345ef760192
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PORT: ${PG_PORT}
+      POSTGRES_HOST: ${PG_HOST}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DATABASE}
+    volumes:
+      - db-content:/var/lib/postgresql
+  adminer:
+    # adminer:5.4.2-standalone
+    image: adminer@sha256:41898b976011fd87f2d3037366ad97f7d89fddfebc8aa8b3a7d77d0c465aa37b
+    ports:
+      - 58080:8080
+
+volumes:
+  db-content: {}

@@ -1,6 +1,6 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, pgTable, text } from "drizzle-orm/pg-core";
 
-export const photoConfig = sqliteTable("photo_configs", {
+export const photoConfig = pgTable("photo_configs", {
   id: text().primaryKey(),
   cols: integer(),
   rows: integer(),

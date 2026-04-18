@@ -25,7 +25,7 @@ export type APIPhotoResponse = MergeDeep<
   }
 >;
 
-export async function loader({ context, request }: Route.LoaderArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   const cursor = new URL(request.url).searchParams.get("cursor");
 
   const photos = await membraneClient.GET("/photos", {
@@ -41,7 +41,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     throw new Error("GET /photos to the Iris failed");
   }
 
-  const db = database(context.cloudflare.env.DB);
+  const db = database();
   const photoConfigs = await db
     .select()
     .from(photoConfig)

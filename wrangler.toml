@@ -1,9 +1,0 @@
-name = "iridescence"
-compatibility_date = "2026-04-13"
-main = "./app/worker.ts"
-
-[[d1_databases]]
-binding = "DB"
-database_name = "db"
-database_id = "your-database-id"
-migrations_dir = "./.drizzle"

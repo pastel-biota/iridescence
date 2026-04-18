@@ -110,12 +110,12 @@ const propertiesPanelRoot = hstack.raw({
   bottom: 0,
   right: 0,
   paddingX: "12px",
-  paddingY: "6px",
+  paddingY: "5px 6px",
   backgroundColor: "#0005",
-  gap: "4px",
+  gap: "1px 4px",
   color: "white",
   flexWrap: "wrap",
-  alignItems: "end",
+  alignItems: "baseline",
 });
 
 const machineName = css({
