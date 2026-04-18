@@ -15,7 +15,7 @@ export function usePhotoList() {
       }
 
       const req = await fetch(url);
-      return await req.json();
+      return (await req.json()) as APIPhotoResponse;
     },
     select: (data) => ({
       pages: data.pages.map((page) =>
