@@ -6,6 +6,7 @@ on:
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
+    environment: internal
     permissions:
       contents: read
       packages: write
@@ -30,4 +31,5 @@ jobs:
             ghcr.io/pastel-biota/iridescence:${{ github.ref_name }}
             ghcr.io/pastel-biota/iridescence:latest
           build-args: |
-            VITE_MEMBRANE_BASE_URL=${{ vars.VITE_MEMBRANE_BASE_URL }}
+            VITE_IRIS_BASE_URL=${{ vars.VITE_IRIS_BASE_URL }}
+            VITE_IRIDESCENCE_BASE_URL=${{ vars.VITE_IRIDESCENCE_BASE_URL }}
