@@ -1,9 +1,26 @@
 import "leaflet/dist/leaflet.css";
 
+import L from "leaflet";
+import MarkerIcon from "leaflet/dist/images/marker-icon.png";
+import MarkerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import MarkerShadow from "leaflet/dist/images/marker-shadow.png";
 import { type FC } from "react";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 
 import { latLngInComma, type LatLngTuple } from "~/models";
+
+if (typeof window !== "undefined") {
+  // Leaflet refers to the wrong URL for the icons.
+  // Make leaflet use bundler-provided URLs
+
+  // @ts-expect-error: globally accepted idiom
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: MarkerIcon2x,
+    iconUrl: MarkerIcon,
+    shadowUrl: MarkerShadow,
+  });
+}
 
 export type LeafletMapProps = {
   className: string;
