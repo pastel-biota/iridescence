@@ -5,8 +5,17 @@ on:
 
 jobs:
   build-and-release:
+    strategy:
+      matrix:
+        include:
+          - env: internal
+            registry: iridescence
+          - env: public
+            registry: iridescence-public
+      fail-fast: true
+
     runs-on: ubuntu-latest
-    environment: internal
+    environment: ${{ matrix.env }}
     permissions:
       contents: read
       packages: write
@@ -28,8 +37,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/pastel-biota/iridescence:${{ github.ref_name }}
-            ghcr.io/pastel-biota/iridescence:latest
+            ghcr.io/pastel-biota/${{ matrix.registry }}:${{ github.ref_name }}
+            ghcr.io/pastel-biota/${{ matrix.registry }}:latest
           build-args: |
             VITE_IRIS_BASE_URL=${{ vars.VITE_IRIS_BASE_URL }}
             VITE_IRIDESCENCE_BASE_URL=${{ vars.VITE_IRIDESCENCE_BASE_URL }}
