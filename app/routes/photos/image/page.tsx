@@ -25,7 +25,7 @@ export function meta(args: Route.MetaArgs) {
 
   return [
     {
-      name: "og:url",
+      property: "og:url",
       content: `${IRIDESCENCE_BASE_URL}/photos/${args.params.id}/`,
     },
     { property: "og:title", content: "Iris // Photobook" },
@@ -34,6 +34,7 @@ export function meta(args: Route.MetaArgs) {
     { property: "og:image:width", content: thumbnail.width },
     { property: "og:image:height", content: thumbnail.height },
     { property: "og:image:type", content: thumbnail.mime },
+    { name: "twitter:card", content: "summary_large_image" },
   ];
 }
 
