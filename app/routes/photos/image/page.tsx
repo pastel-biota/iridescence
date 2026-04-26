@@ -23,6 +23,15 @@ export function meta(args: Route.MetaArgs) {
     throw new Error("Thought thumbnail exists but wasn't");
   }
 
+  const properties = [
+    photo.shotTime.toLocaleString(),
+    photo.properties?.fNumber && `F${photo.properties.fNumber.toFixed(1)}`,
+    photo.properties?.shutterSpeed &&
+      `1/${photo.properties.shutterSpeed.toString()}`,
+    photo.properties?.iso && `ISO ${photo.properties.iso.toString()}`,
+    photo.properties?.focal && `${photo.properties.focal.toString()} mm`,
+  ].join(" ");
+
   return [
     {
       property: "og:url",
@@ -34,7 +43,12 @@ export function meta(args: Route.MetaArgs) {
     { property: "og:image:width", content: thumbnail.width },
     { property: "og:image:height", content: thumbnail.height },
     { property: "og:image:type", content: thumbnail.mime },
+    { name: "theme-color", content: photo.representativeColor },
     { name: "twitter:card", content: "summary_large_image" },
+    {
+      name: "description",
+      content: properties,
+    },
   ];
 }
 
