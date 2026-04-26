@@ -49,6 +49,10 @@ export function meta(args: Route.MetaArgs) {
       name: "description",
       content: properties,
     },
+    {
+      property: "og:description",
+      content: properties,
+    },
   ];
 }
 
