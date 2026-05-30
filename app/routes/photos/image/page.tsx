@@ -10,6 +10,7 @@ import { LocationProperty } from "~/features/photo/components/LocationProperty";
 import { PropertyValue } from "~/features/photo/components/PropertyValue";
 import { TILE_VIEW_TRANSITION_NAME } from "~/features/tile/style";
 import { useViewTransitionFlags } from "~/lib/view-transition";
+import { getImageBySize } from "~/models";
 import { queryClient } from "~/provider";
 
 import type { Route } from "./+types/page";
@@ -73,12 +74,8 @@ export default function ImageDetailPage({
   });
   const { onPage } = useViewTransitionFlags(`/photos/${id}`);
 
-  const blur = photo.images["icon"];
-  const main = photo.images["main"];
-
-  if (main === undefined) {
-    throw new Error("Expected to have main image");
-  }
+  const blur = getImageBySize(photo.images, 1);
+  const main = getImageBySize(photo.images, 2560);
 
   return (
     <div className={root} role="dialog">
@@ -103,7 +100,7 @@ export default function ImageDetailPage({
           // src={"https://picsum.photos/id/120/1920/1080"}
           className={mainImage}
           style={{
-            background: blur && `url(${blur.imageUrl})`,
+            background: `url(${blur.imageUrl})`,
             backgroundPosition: "center",
             backgroundSize: "contain",
             backgroundRepeat: "no-repeat",

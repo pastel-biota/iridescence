@@ -2,8 +2,7 @@ import { type FC, useCallback, useEffect, useRef } from "react";
 import { css } from "styled-system/css";
 import { grid } from "styled-system/patterns";
 
-import { expectIndex } from "~/lib/data/expect-index";
-import type { PhotoViewReference } from "~/models";
+import { getImageBySize, type PhotoViewReference } from "~/models";
 
 import { PhotoTile } from "../PhotoTile/PhotoTile";
 
@@ -50,8 +49,8 @@ export const PhotoGrid: FC<Props> = ({ photos, onMoreRequested }) => {
     <div className={root}>
       <ol className={photoGrid}>
         {photos.map((photo) => {
-          const thumbnail = expectIndex(photo.images, "thumbnail");
-          const icon = expectIndex(photo.images, "icon");
+          const thumbnail = getImageBySize(photo.images, 320);
+          const icon = getImageBySize(photo.images, 80);
           const [row, col] = photo.span;
 
           return (
