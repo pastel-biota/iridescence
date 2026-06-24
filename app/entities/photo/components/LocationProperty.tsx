@@ -2,9 +2,9 @@ import type { FC } from "react";
 import { css } from "styled-system/css";
 import { hstack, vstack } from "styled-system/patterns";
 
+import type { LatLngTuple } from "~/entities/photo/model";
 import { LeafletMap } from "~/experts/map/components/LeafletMap";
 import { externalMapLinks } from "~/experts/map/externals";
-import type { LatLngTuple } from "~/models";
 
 type Props = {
   latlng: LatLngTuple | null | undefined;

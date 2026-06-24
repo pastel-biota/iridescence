@@ -2,9 +2,11 @@ import { type FC, useCallback, useEffect, useRef } from "react";
 import { css } from "styled-system/css";
 import { grid } from "styled-system/patterns";
 
-import { getImageBySize, type PhotoViewReference } from "~/models";
-
-import { PhotoTile } from "../PhotoTile/PhotoTile";
+import { PhotoTile } from "~/entities/photo/components/PhotoTile/PhotoTile";
+import {
+  getImageBySize,
+  type PhotoViewReference,
+} from "~/entities/photo/model";
 
 type Props = {
   photos: PhotoViewReference[];

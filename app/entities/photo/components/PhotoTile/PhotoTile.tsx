@@ -3,11 +3,10 @@ import { Link } from "react-router";
 import { css, type Styles } from "styled-system/css";
 import { hstack } from "styled-system/patterns";
 
+import { usePhotoDetail } from "~/entities/photo/api/query";
+import type { PhotoProperties } from "~/entities/photo/model";
+import { TILE_VIEW_TRANSITION_NAME } from "~/features/tile/style";
 import { useViewTransitionFlags } from "~/lib/view-transition";
-import type { PhotoProperties } from "~/models";
-
-import { TILE_VIEW_TRANSITION_NAME } from "../../style";
-import { usePhotoDetail } from "./query";
 
 type Props = {
   photoId: string;

@@ -3,14 +3,14 @@ import { Link } from "react-router";
 import { css } from "styled-system/css";
 import { grid, hstack, vstack } from "styled-system/patterns";
 
-import { mapPhoto } from "~/api/iris/mappers";
 import { IRIDESCENCE_BASE_URL } from "~/configs/client";
+import { mapPhoto } from "~/entities/photo/api/mappers";
+import { LocationProperty } from "~/entities/photo/components/LocationProperty";
+import { PropertyValue } from "~/entities/photo/components/PropertyValue";
+import { getImageBySize } from "~/entities/photo/model";
 import { CopyText } from "~/experts/dom/components/CopyText";
-import { LocationProperty } from "~/features/photo/components/LocationProperty";
-import { PropertyValue } from "~/features/photo/components/PropertyValue";
 import { TILE_VIEW_TRANSITION_NAME } from "~/features/tile/style";
 import { useViewTransitionFlags } from "~/lib/view-transition";
-import { getImageBySize } from "~/models";
 import { queryClient } from "~/provider";
 
 import type { Route } from "./+types/page";

@@ -1,17 +1,16 @@
 import z from "zod/v4";
 
-import { mapObject } from "~/lib/data/map-object";
+import type { components } from "~/api/iris/schema";
+import { getImageServeUrl } from "~/api/iris/url";
 import type {
   ImageMeta,
   Photo,
   PhotoProperties,
   PhotoReference,
   PhotoViewReference,
-} from "~/models";
+} from "~/entities/photo/model";
+import { mapObject } from "~/lib/data/map-object";
 import type { APIPhotoResponse } from "~/routes/api/photos";
-
-import type { components } from "./schema";
-import { getImageServeUrl } from "./url";
 
 export function mapPhoto(photo: components["schemas"]["PhotoScheme"]): Photo {
   return {

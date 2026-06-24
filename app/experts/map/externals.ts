@@ -1,4 +1,4 @@
-import { latLngInComma, type LatLngTuple } from "~/models";
+import { latLngInComma, type LatLngTuple } from "~/entities/photo/model";
 
 export type ExternalMapLink = {
   label: string;

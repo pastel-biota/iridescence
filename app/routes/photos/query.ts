@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-import { mapPhotoViewReference } from "~/api/iris/mappers";
 import { IRIDESCENCE_BASE_URL } from "~/configs/client";
+import { mapPhotoViewReference } from "~/entities/photo/api/mappers";
 
 import { type APIPhotoResponse, APIPhotoURL } from "../api/photos";
 

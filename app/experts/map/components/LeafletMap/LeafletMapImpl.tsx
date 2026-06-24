@@ -7,7 +7,7 @@ import MarkerShadow from "leaflet/dist/images/marker-shadow.png";
 import { type FC } from "react";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 
-import { latLngInComma, type LatLngTuple } from "~/models";
+import { latLngInComma, type LatLngTuple } from "~/entities/photo/model";
 
 if (typeof window !== "undefined") {
   // Leaflet refers to the wrong URL for the icons.

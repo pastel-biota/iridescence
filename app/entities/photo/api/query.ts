@@ -1,5 +1,6 @@
 import { irisQuery } from "~/api/iris/client";
-import { mapPhoto } from "~/api/iris/mappers";
+
+import { mapPhoto } from "./mappers";
 
 export function usePhotoDetail(photoId: string, enabled: boolean) {
   return irisQuery.useQuery(
