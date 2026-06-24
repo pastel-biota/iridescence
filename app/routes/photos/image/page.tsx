@@ -77,6 +77,12 @@ export default function ImageDetailPage({
   const blur = getImageBySize(photo.images, 1);
   const main = getImageBySize(photo.images, 2560);
 
+  if (blur === null || main === null) {
+    throw new Error(
+      "The image is still in generation, and the ImageDetailPage still does not support this",
+    );
+  }
+
   return (
     <div className={root} role="dialog">
       <Link

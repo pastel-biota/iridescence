@@ -4,44 +4,50 @@ import { css, type Styles } from "styled-system/css";
 import { hstack } from "styled-system/patterns";
 
 import { usePhotoDetail } from "~/entities/photo/api/query";
-import type { PhotoProperties } from "~/entities/photo/model";
+import {
+  getImageBySize,
+  type PhotoProperties,
+  type PhotoReference,
+} from "~/entities/photo/model";
 import { TILE_VIEW_TRANSITION_NAME } from "~/features/tile/style";
 import { useViewTransitionFlags } from "~/lib/view-transition";
 
 type Props = {
-  photoId: string;
-  blurUrl: string;
-  thumbnailUrl: string;
-  fallbackColor: string;
+  photo: PhotoReference;
 };
 
-export const PhotoTile: FC<Props> = ({
-  photoId,
-  blurUrl,
-  thumbnailUrl,
-  fallbackColor,
-}) => {
+export const PhotoTile: FC<Props> = ({ photo }) => {
   const [hovered, setHovered] = useState(false);
-  const photo = usePhotoDetail(photoId, hovered);
-  const { offPage } = useViewTransitionFlags(`/photos/${photoId}`);
+  const photoDetail = usePhotoDetail(photo.id, hovered);
+  const { offPage } = useViewTransitionFlags(`/photos/${photo.id}`);
+
+  const thumbnail = getImageBySize(photo.images, 320);
+  const icon = getImageBySize(photo.images, 80);
 
   return (
-    <Link to={`/photos/${photoId}`} viewTransition preventScrollReset>
+    <Link to={`/photos/${photo.id}`} viewTransition preventScrollReset>
       <article
         className={`${root} group`}
         style={{
-          backgroundColor: fallbackColor,
-          backgroundImage: `url(${blurUrl})`,
+          backgroundColor: photo.representativeColor,
           backgroundSize: "cover",
           backgroundPosition: "center",
+          ...(icon === null
+            ? {}
+            : {
+                backgroundImage: `url(${icon.imageUrl})`,
+              }),
           viewTransitionName: offPage ? TILE_VIEW_TRANSITION_NAME : undefined,
         }}
         onMouseEnter={() => {
           setHovered(true);
         }}
       >
-        <img src={thumbnailUrl} className={img} />
-        <PropertyPanel properties={photo.data?.properties} styles={panel} />
+        {thumbnail && <img src={thumbnail.imageUrl} className={img} />}
+        <PropertyPanel
+          properties={photoDetail.data?.properties}
+          styles={panel}
+        />
       </article>
     </Link>
   );

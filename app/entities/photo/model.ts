@@ -45,10 +45,10 @@ export type PhotoProperties = {
 export function getImageBySize(
   imagesMap: Record<string, ImageMeta>,
   desirableSize: number,
-): ImageMeta {
+): ImageMeta | null {
   const images = Object.entries(imagesMap);
   if (images.length === 0) {
-    throw new Error("Expected to have at least one image");
+    return null;
   }
 
   const imageSize = images

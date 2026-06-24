@@ -3,10 +3,7 @@ import { css } from "styled-system/css";
 import { grid } from "styled-system/patterns";
 
 import { PhotoTile } from "~/entities/photo/components/PhotoTile/PhotoTile";
-import {
-  getImageBySize,
-  type PhotoViewReference,
-} from "~/entities/photo/model";
+import { type PhotoViewReference } from "~/entities/photo/model";
 
 type Props = {
   photos: PhotoViewReference[];
@@ -51,8 +48,6 @@ export const PhotoGrid: FC<Props> = ({ photos, onMoreRequested }) => {
     <div className={root}>
       <ol className={photoGrid}>
         {photos.map((photo) => {
-          const thumbnail = getImageBySize(photo.images, 320);
-          const icon = getImageBySize(photo.images, 80);
           const [row, col] = photo.span;
 
           return (
@@ -65,12 +60,7 @@ export const PhotoGrid: FC<Props> = ({ photos, onMoreRequested }) => {
                 padding: "0 2px 2px 0",
               }}
             >
-              <PhotoTile
-                photoId={photo.id}
-                thumbnailUrl={thumbnail.imageUrl}
-                blurUrl={icon.imageUrl}
-                fallbackColor={photo.representativeColor}
-              />
+              <PhotoTile photo={photo} />
             </li>
           );
         })}
