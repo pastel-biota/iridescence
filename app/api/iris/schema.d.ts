@@ -4,6 +4,44 @@
  */
 
 export interface paths {
+  "/auth/login": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Log in to Iris' user
+     * @description Issue a new session for Iris to access to the administrative endpoints.
+     *     You need to create users in advance to log in.
+     */
+    post: operations["login"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/auth/me": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve the information about currently logged in user. */
+    get: operations["me"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/photos": {
     parameters: {
       query?: never;
@@ -11,12 +49,18 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Get the list of images. */
-    get: operations["get_images_list"];
+    /** Get registered photos' list */
+    get: operations["get_photos_list"];
     put?: never;
     /**
      * Registers a new photo
-     * @description Register a new photo, and prepare for the upload for the actual image.
+     * @description Upload a photo payload and register. This triggers the image processing.
+     *     Note that the response from this endpoint does not guarantee (and practically does not mean)
+     *     that the image has been generated. However representative_rgb is available, and the client can
+     *     use this value to show the placeholder for the uploaded photo, until the image is being
+     *     processed.
+     *
+     *     You need to be logged in to use this endpoint.
      */
     post: operations["new_photo"];
     delete?: never;
@@ -37,8 +81,29 @@ export interface paths {
     /**
      * Get photos list by hashes list
      * @description Retrieves the list of photos from the list of hashes.
+     *     You need to be logged in to use this endpoint.
      */
     post: operations["get_photos_list_by_hashes_list"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/photos/sync/{name}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * A new field
+     * @description This is a new field. This initially returns implemented error.
+     */
+    post: operations["sync"];
     delete?: never;
     options?: never;
     head?: never;
@@ -52,14 +117,15 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /**
-     * Get a photo's meta
-     * @description This is a new field. This initially returns implemented error.
-     */
+    /** Get a photo's meta */
     get: operations["get_photo_meta"];
     put?: never;
     post?: never;
-    delete?: never;
+    /**
+     * A new field
+     * @description This is a new field. This initially returns implemented error.
+     */
+    delete: operations["delete"];
     options?: never;
     head?: never;
     patch?: never;
@@ -73,7 +139,11 @@ export interface paths {
       cookie?: never;
     };
     get?: never;
-    /** Reprocess the photos. This fills up the missing images. */
+    /**
+     * Reprocess the photo
+     * @description Reprocess the photos. This fills up the missing images.
+     *     You need to be logged in to use this endpoint.
+     */
     put: operations["reprocess"];
     post?: never;
     delete?: never;
@@ -106,7 +176,10 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
-    /** Format: binary */
+    /**
+     * Format: binary
+     * @example <Binary Data>
+     */
     BinaryBody: string;
     ClientError: {
       /** @example The value was invalid... */
@@ -114,12 +187,7 @@ export interface components {
       /** @example error */
       status: string;
     };
-    GetImagesListResponse: {
-      next_cursor?: string | null;
-      photos: components["schemas"]["PhotoReferenceSchema"][];
-      /** Format: int32 */
-      total_count: number;
-    };
+    EntityName: string;
     GetPhotoMetaResponse: {
       photo: components["schemas"]["PhotoScheme"];
     };
@@ -143,6 +211,14 @@ export interface components {
         [key: string]: components["schemas"]["PhotoReferenceSchema"];
       };
     };
+    GetPhotosListResponse: {
+      next_cursor?: null | components["schemas"]["Identifier"];
+      photos: components["schemas"]["PhotoReferenceSchema"][];
+      /** Format: int32 */
+      total_count: number;
+    };
+    /** @example 202604-01ARZ3NDEKTSV4RRFFQ69G5FAV */
+    Identifier: string;
     ImageMetaScheme: {
       /** @example jpg */
       ext: string;
@@ -159,11 +235,22 @@ export interface components {
        */
       width: number;
     };
+    LoginBody: {
+      password: string;
+      username: components["schemas"]["EntityName"];
+    };
+    LoginResponse: {
+      session_key: string;
+    };
+    MeResponse: {
+      name: components["schemas"]["EntityName"];
+    };
     NewPhotoResponse: {
       photo: components["schemas"]["PhotoScheme"];
     };
     PhotoReferenceSchema: {
-      id: string;
+      federator?: null | components["schemas"]["EntityName"];
+      id: components["schemas"]["Identifier"];
       images: {
         [key: string]: components["schemas"]["ImageMetaScheme"];
       };
@@ -172,15 +259,16 @@ export interface components {
       original_sha256: string;
       representative_color: string;
       shot_time: string;
+      tags: {
+        [key: string]: string[];
+      };
       /** Format: int32 */
       year: number;
     };
     PhotoScheme: {
-      /**
-       * @description Identifier assigned to the created photo.
-       * @example 202601_img_0001_jpg-01AAAA
-       */
-      id: string;
+      federator?: null | components["schemas"]["EntityName"];
+      /** @description Identifier assigned to the created photo. */
+      id: components["schemas"]["Identifier"];
       /**
        * @description The list of identifiers assigned to the specified images.
        *     The image ID is used to upload the actual image later.
@@ -197,6 +285,9 @@ export interface components {
       /** @example #123456 */
       representative_color: string;
       shot_datetime: string;
+      tags: {
+        [key: string]: string[];
+      };
     };
     PropertiesSchema: {
       /**
@@ -235,16 +326,6 @@ export interface components {
     };
     /** @default null */
     ReprocessResponse: unknown;
-    SuccessfulResponse_GetImagesListResponse: {
-      response: {
-        next_cursor?: string | null;
-        photos: components["schemas"]["PhotoReferenceSchema"][];
-        /** Format: int32 */
-        total_count: number;
-      };
-      /** @example okay */
-      status: string;
-    };
     SuccessfulResponse_GetPhotoMetaResponse: {
       response: {
         photo: components["schemas"]["PhotoScheme"];
@@ -266,6 +347,30 @@ export interface components {
       /** @example okay */
       status: string;
     };
+    SuccessfulResponse_GetPhotosListResponse: {
+      response: {
+        next_cursor?: null | components["schemas"]["Identifier"];
+        photos: components["schemas"]["PhotoReferenceSchema"][];
+        /** Format: int32 */
+        total_count: number;
+      };
+      /** @example okay */
+      status: string;
+    };
+    SuccessfulResponse_LoginResponse: {
+      response: {
+        session_key: string;
+      };
+      /** @example okay */
+      status: string;
+    };
+    SuccessfulResponse_MeResponse: {
+      response: {
+        name: components["schemas"]["EntityName"];
+      };
+      /** @example okay */
+      status: string;
+    };
     SuccessfulResponse_NewPhotoResponse: {
       response: {
         photo: components["schemas"]["PhotoScheme"];
@@ -279,6 +384,12 @@ export interface components {
       /** @example okay */
       status: string;
     };
+    SuccessfulResponse_SyncResponse: {
+      response: Record<string, never>;
+      /** @example okay */
+      status: string;
+    };
+    SyncResponse: Record<string, never>;
   };
   responses: never;
   parameters: never;
@@ -288,7 +399,78 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  get_images_list: {
+  login: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["LoginBody"];
+      };
+    };
+    responses: {
+      /** @description The user has been successfully logged in and the session is issued */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SuccessfulResponse_LoginResponse"];
+        };
+      };
+      /** @description The parameter/body was invalid */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClientError"];
+        };
+      };
+      /** @description The provided credential is not valid */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClientError"];
+        };
+      };
+    };
+  };
+  me: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The user has been successfully logged in and the session is issued */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SuccessfulResponse_MeResponse"];
+        };
+      };
+      /** @description The user is not logged in */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClientError"];
+        };
+      };
+    };
+  };
+  get_photos_list: {
     parameters: {
       query?: {
         /** @description The pagination cursor - retrieves from beginning */
@@ -302,13 +484,13 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description The photo was registered and ready for image upload. */
+      /** @description The list of images. */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["SuccessfulResponse_GetImagesListResponse"];
+          "application/json": components["schemas"]["SuccessfulResponse_GetPhotosListResponse"];
         };
       };
       /** @description The parameter/body was invalid */
@@ -335,7 +517,7 @@ export interface operations {
       };
     };
     responses: {
-      /** @description The photo was registered and ready for image upload. */
+      /** @description The photo was registered and the image processing was queued. */
       201: {
         headers: {
           [name: string]: unknown;
@@ -377,13 +559,44 @@ export interface operations {
       };
     };
     responses: {
-      /** @description The photo was registered and ready for image upload. */
+      /** @description Found photos. If no photo is found, the endpoint will return 200 OK with an empty array. */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
           "application/json": components["schemas"]["SuccessfulResponse_GetPhotosListByHashesListResponse"];
+        };
+      };
+      /** @description The parameter/body was invalid */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClientError"];
+        };
+      };
+    };
+  };
+  sync: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        name: components["schemas"]["EntityName"];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The photo was successfully synchronized */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SuccessfulResponse_SyncResponse"];
         };
       };
       /** @description The parameter/body was invalid */
@@ -408,7 +621,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description The photo was registered and ready for image upload. */
+      /** @description A found photo's metadata information. */
       200: {
         headers: {
           [name: string]: unknown;
@@ -419,6 +632,44 @@ export interface operations {
       };
       /** @description The parameter/body was invalid */
       400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClientError"];
+        };
+      };
+    };
+  };
+  delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        photo_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description The photo has been removed from the Iris */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description The parameter/body was invalid */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ClientError"];
+        };
+      };
+      /** @description The photo with the same ID is not found */
+      404: {
         headers: {
           [name: string]: unknown;
         };

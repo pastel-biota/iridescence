@@ -1,6 +1,12 @@
-import { type FC, type ReactNode, useState } from "react";
+import {
+  type FC,
+  type MouseEventHandler,
+  type ReactNode,
+  useCallback,
+  useState,
+} from "react";
 import { Link } from "react-router";
-import { css, type Styles } from "styled-system/css";
+import { css, cva, type Styles } from "styled-system/css";
 import { hstack } from "styled-system/patterns";
 
 import { usePhotoDetail } from "~/entities/photo/api/query";
@@ -14,9 +20,11 @@ import { useViewTransitionFlags } from "~/lib/view-transition";
 
 type Props = {
   photo: PhotoReference;
+  onShiftClick?: (photo: PhotoReference) => void;
+  selected?: boolean;
 };
 
-export const PhotoTile: FC<Props> = ({ photo }) => {
+export const PhotoTile: FC<Props> = ({ onShiftClick, photo, selected }) => {
   const [hovered, setHovered] = useState(false);
   const photoDetail = usePhotoDetail(photo.id, hovered);
   const { offPage } = useViewTransitionFlags(`/photos/${photo.id}`);
@@ -24,10 +32,30 @@ export const PhotoTile: FC<Props> = ({ photo }) => {
   const thumbnail = getImageBySize(photo.images, 320);
   const icon = getImageBySize(photo.images, 80);
 
+  const handleTileClick: MouseEventHandler<HTMLAnchorElement> = useCallback(
+    (e) => {
+      if (onShiftClick === undefined) {
+        return;
+      }
+
+      if (e.shiftKey) {
+        e.preventDefault();
+        onShiftClick(photo);
+      }
+    },
+    [onShiftClick, photo],
+  );
+
   return (
-    <Link to={`/photos/${photo.id}`} viewTransition preventScrollReset>
+    <Link
+      className="group"
+      to={`/photos/${photo.id}`}
+      viewTransition
+      preventScrollReset
+      onClick={handleTileClick}
+    >
       <article
-        className={`${root} group`}
+        className={root({ selected })}
         style={{
           backgroundColor: photo.representativeColor,
           backgroundSize: "cover",
@@ -53,11 +81,25 @@ export const PhotoTile: FC<Props> = ({ photo }) => {
   );
 };
 
-const root = css({
-  position: "relative",
-  width: "100%",
-  height: "100%",
-  overflow: "hidden",
+const root = cva({
+  base: {
+    position: "relative",
+    width: "100%",
+    height: "100%",
+    overflow: "hidden",
+    _groupFocusVisible: {
+      outline: "2px solid {colors.brand.primary}",
+      outlineOffset: "-2px",
+    },
+  },
+  variants: {
+    selected: {
+      true: {
+        outline: "6px solid {colors.brand.primary}",
+        outlineOffset: "-10px",
+      },
+    },
+  },
 });
 
 const img = css({

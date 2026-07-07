@@ -5,6 +5,7 @@ type Props = {
   textToCopy: string;
 };
 
+/** @deprecated Use CopyTextButton */
 export const CopyText: FC<Props> = ({ textToCopy }) => {
   const [copied, setCopied] = useState(false);
 

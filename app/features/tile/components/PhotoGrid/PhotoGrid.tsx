@@ -3,14 +3,24 @@ import { css } from "styled-system/css";
 import { grid } from "styled-system/patterns";
 
 import { PhotoTile } from "~/entities/photo/components/PhotoTile/PhotoTile";
-import { type PhotoViewReference } from "~/entities/photo/model";
+import {
+  type PhotoReference,
+  type PhotoViewReference,
+} from "~/entities/photo/model";
 
 type Props = {
   photos: PhotoViewReference[];
   onMoreRequested: () => void;
+  onShiftClick?: (photo: PhotoReference) => void;
+  selected?: Set<string>;
 };
 
-export const PhotoGrid: FC<Props> = ({ photos, onMoreRequested }) => {
+export const PhotoGrid: FC<Props> = ({
+  onShiftClick,
+  photos,
+  onMoreRequested,
+  selected,
+}) => {
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const handleViewIn = useCallback(() => {
     onMoreRequested();
@@ -60,7 +70,11 @@ export const PhotoGrid: FC<Props> = ({ photos, onMoreRequested }) => {
                 padding: "0 2px 2px 0",
               }}
             >
-              <PhotoTile photo={photo} />
+              <PhotoTile
+                photo={photo}
+                onShiftClick={onShiftClick}
+                selected={selected?.has(photo.id) ?? false}
+              />
             </li>
           );
         })}

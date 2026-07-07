@@ -1,27 +1,19 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "utoipa-axum",
-    "description": "Utoipa's axum bindings for seamless integration for the two",
-    "contact": {
-      "name": "Juha Kukkonen",
-      "email": "juha7kukkonen@gmail.com"
-    },
-    "license": {
-      "name": "MIT OR Apache-2.0",
-      "identifier": "MIT OR Apache-2.0"
-    },
-    "version": "0.2.0"
+    "title": "Iris - HTTP Rest API",
+    "description": "Iris is a self-host photo album service.\nIris provides the management layer - the frontend service is separated as \"Iridescence\"\n",
+    "version": "1.0.0"
   },
   "paths": {
     "/auth/login": {
       "post": {
-        "summary": "Get a photo's meta",
-        "description": "This is a new field. This initially returns implemented error.",
+        "summary": "Log in to Iris' user",
+        "description": "Issue a new session for Iris to access to the administrative endpoints.\nYou need to create users in advance to log in.",
         "operationId": "login",
         "requestBody": {
           "content": {
-            "application/octet-stream": {
+            "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/LoginBody"
               }
@@ -31,7 +23,7 @@
         },
         "responses": {
           "200": {
-            "description": "The photo was registered and ready for image upload.",
+            "description": "The user has been successfully logged in and the session is issued",
             "content": {
               "application/json": {
                 "schema": {
@@ -49,28 +41,9 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/federation/health": {
-      "get": {
-        "summary": "Get a photo's meta",
-        "description": "This is a new field. This initially returns implemented error.",
-        "operationId": "ping",
-        "responses": {
-          "200": {
-            "description": "The photo was registered and ready for image upload.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessfulResponse_HealthResponse"
-                }
-              }
-            }
           },
-          "400": {
-            "description": "The parameter/body was invalid",
+          "401": {
+            "description": "The provided credential is not valid",
             "content": {
               "application/json": {
                 "schema": {
@@ -82,24 +55,23 @@
         }
       }
     },
-    "/federation/photos": {
+    "/auth/me": {
       "get": {
-        "summary": "Get a photo's meta",
-        "description": "This is a new field. This initially returns implemented error.",
-        "operationId": "list",
+        "summary": "Retrieve the information about currently logged in user.",
+        "operationId": "me",
         "responses": {
           "200": {
-            "description": "The photo was registered and ready for image upload.",
+            "description": "The user has been successfully logged in and the session is issued",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SuccessfulResponse_ListFederatedPhotoResponse"
+                  "$ref": "#/components/schemas/SuccessfulResponse_MeResponse"
                 }
               }
             }
           },
-          "400": {
-            "description": "The parameter/body was invalid",
+          "401": {
+            "description": "The user is not logged in",
             "content": {
               "application/json": {
                 "schema": {
@@ -113,8 +85,8 @@
     },
     "/photos": {
       "get": {
-        "summary": "Get the list of images.",
-        "operationId": "get_images_list",
+        "summary": "Get registered photos' list",
+        "operationId": "get_photos_list",
         "parameters": [
           {
             "name": "cursor",
@@ -139,11 +111,11 @@
         ],
         "responses": {
           "200": {
-            "description": "The photo was registered and ready for image upload.",
+            "description": "The list of images.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SuccessfulResponse_GetImagesListResponse"
+                  "$ref": "#/components/schemas/SuccessfulResponse_GetPhotosListResponse"
                 }
               }
             }
@@ -162,7 +134,7 @@
       },
       "post": {
         "summary": "Registers a new photo",
-        "description": "Register a new photo, and prepare for the upload for the actual image.",
+        "description": "Upload a photo payload and register. This triggers the image processing.\nNote that the response from this endpoint does not guarantee (and practically does not mean)\nthat the image has been generated. However representative_rgb is available, and the client can\nuse this value to show the placeholder for the uploaded photo, until the image is being\nprocessed.\n\nYou need to be logged in to use this endpoint.",
         "operationId": "new_photo",
         "requestBody": {
           "content": {
@@ -176,7 +148,7 @@
         },
         "responses": {
           "201": {
-            "description": "The photo was registered and ready for image upload.",
+            "description": "The photo was registered and the image processing was queued.",
             "content": {
               "application/json": {
                 "schema": {
@@ -205,13 +177,21 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "session_header": []
+          },
+          {
+            "session_cookie": []
+          }
+        ]
       }
     },
     "/photos/by-hashes": {
       "post": {
         "summary": "Get photos list by hashes list",
-        "description": "Retrieves the list of photos from the list of hashes.",
+        "description": "Retrieves the list of photos from the list of hashes.\nYou need to be logged in to use this endpoint.",
         "operationId": "get_photos_list_by_hashes_list",
         "requestBody": {
           "content": {
@@ -225,11 +205,58 @@
         },
         "responses": {
           "200": {
-            "description": "The photo was registered and ready for image upload.",
+            "description": "Found photos. If no photo is found, the endpoint will return 200 OK with an empty array.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SuccessfulResponse_GetPhotosListByHashesListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The parameter/body was invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session_header": []
+          },
+          {
+            "session_cookie": []
+          }
+        ]
+      }
+    },
+    "/photos/sync/{name}": {
+      "post": {
+        "summary": "A new field",
+        "description": "This is a new field. This initially returns implemented error.",
+        "operationId": "sync",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EntityName"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The photo was successfully synchronized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessfulResponse_SyncResponse"
                 }
               }
             }
@@ -250,7 +277,6 @@
     "/photos/{photo_id}": {
       "get": {
         "summary": "Get a photo's meta",
-        "description": "This is a new field. This initially returns implemented error.",
         "operationId": "get_photo_meta",
         "parameters": [
           {
@@ -264,7 +290,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The photo was registered and ready for image upload.",
+            "description": "A found photo's metadata information.",
             "content": {
               "application/json": {
                 "schema": {
@@ -284,11 +310,60 @@
             }
           }
         }
+      },
+      "delete": {
+        "summary": "A new field",
+        "description": "This is a new field. This initially returns implemented error.",
+        "operationId": "delete",
+        "parameters": [
+          {
+            "name": "photo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The photo has been removed from the Iris"
+          },
+          "400": {
+            "description": "The parameter/body was invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The photo with the same ID is not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "session_header": []
+          },
+          {
+            "session_cookie": []
+          }
+        ]
       }
     },
     "/photos/{photo_id}/images": {
       "put": {
-        "summary": "Reprocess the photos. This fills up the missing images.",
+        "summary": "Reprocess the photo",
+        "description": "Reprocess the photos. This fills up the missing images.\nYou need to be logged in to use this endpoint.",
         "operationId": "reprocess",
         "parameters": [
           {
@@ -314,7 +389,15 @@
           "204": {
             "description": "All defined images were already creted"
           }
-        }
+        },
+        "security": [
+          {
+            "session_header": []
+          },
+          {
+            "session_cookie": []
+          }
+        ]
       }
     },
     "/photos/{photo_id}/images/{image_id}": {
@@ -369,7 +452,8 @@
     "schemas": {
       "BinaryBody": {
         "type": "string",
-        "format": "binary"
+        "format": "binary",
+        "example": "<Binary Data>"
       },
       "ClientError": {
         "type": "object",
@@ -385,25 +469,8 @@
           }
         }
       },
-      "GetImagesListResponse": {
-        "type": "object",
-        "required": ["total_count", "photos"],
-        "properties": {
-          "next_cursor": {
-            "type": ["string", "null"]
-          },
-          "photos": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PhotoReferenceSchema"
-            }
-          },
-          "total_count": {
-            "type": "integer",
-            "format": "int32",
-            "minimum": 0
-          }
-        }
+      "EntityName": {
+        "type": "string"
       },
       "GetPhotoMetaResponse": {
         "type": "object",
@@ -449,8 +516,36 @@
           }
         }
       },
-      "HealthResponse": {
-        "type": "object"
+      "GetPhotosListResponse": {
+        "type": "object",
+        "required": ["total_count", "photos"],
+        "properties": {
+          "next_cursor": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/Identifier"
+              }
+            ]
+          },
+          "photos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PhotoReferenceSchema"
+            }
+          },
+          "total_count": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          }
+        }
+      },
+      "Identifier": {
+        "type": "string",
+        "examples": ["202604-01ARZ3NDEKTSV4RRFFQ69G5FAV"]
       },
       "ImageMetaScheme": {
         "type": "object",
@@ -478,27 +573,15 @@
           }
         }
       },
-      "ListFederatedPhotoResponse": {
-        "type": "object",
-        "required": ["photos"],
-        "properties": {
-          "photos": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
       "LoginBody": {
         "type": "object",
         "required": ["username", "password"],
         "properties": {
           "password": {
-            "$ref": "#/components/schemas/Password"
+            "type": "string"
           },
           "username": {
-            "type": "string"
+            "$ref": "#/components/schemas/EntityName"
           }
         }
       },
@@ -511,6 +594,15 @@
           }
         }
       },
+      "MeResponse": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/EntityName"
+          }
+        }
+      },
       "NewPhotoResponse": {
         "type": "object",
         "required": ["photo"],
@@ -520,9 +612,6 @@
           }
         }
       },
-      "Password": {
-        "type": "string"
-      },
       "PhotoReferenceSchema": {
         "type": "object",
         "required": [
@@ -531,15 +620,23 @@
           "month",
           "original_sha256",
           "images",
+          "tags",
           "shot_time",
           "representative_color"
         ],
         "properties": {
           "federator": {
-            "type": ["string", "null"]
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/EntityName"
+              }
+            ]
           },
           "id": {
-            "type": "string"
+            "$ref": "#/components/schemas/Identifier"
           },
           "images": {
             "type": "object",
@@ -564,6 +661,18 @@
           "shot_time": {
             "type": "string"
           },
+          "tags": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "propertyNames": {
+              "type": "string"
+            }
+          },
           "year": {
             "type": "integer",
             "format": "int32"
@@ -576,18 +685,25 @@
           "id",
           "original_sha256",
           "images",
+          "tags",
           "shot_datetime",
           "representative_color",
           "properties"
         ],
         "properties": {
           "federator": {
-            "type": ["string", "null"]
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/EntityName"
+              }
+            ]
           },
           "id": {
-            "type": "string",
-            "description": "Identifier assigned to the created photo.",
-            "example": "202601_img_0001_jpg-01AAAA"
+            "$ref": "#/components/schemas/Identifier",
+            "description": "Identifier assigned to the created photo."
           },
           "images": {
             "type": "object",
@@ -615,6 +731,18 @@
           },
           "shot_datetime": {
             "type": "string"
+          },
+          "tags": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "propertyNames": {
+              "type": "string"
+            }
           }
         }
       },
@@ -670,36 +798,6 @@
       "ReprocessResponse": {
         "default": null
       },
-      "SuccessfulResponse_GetImagesListResponse": {
-        "type": "object",
-        "required": ["status", "response"],
-        "properties": {
-          "response": {
-            "type": "object",
-            "required": ["total_count", "photos"],
-            "properties": {
-              "next_cursor": {
-                "type": ["string", "null"]
-              },
-              "photos": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/PhotoReferenceSchema"
-                }
-              },
-              "total_count": {
-                "type": "integer",
-                "format": "int32",
-                "minimum": 0
-              }
-            }
-          },
-          "status": {
-            "type": "string",
-            "example": "okay"
-          }
-        }
-      },
       "SuccessfulResponse_GetPhotoMetaResponse": {
         "type": "object",
         "required": ["status", "response"],
@@ -745,32 +843,34 @@
           }
         }
       },
-      "SuccessfulResponse_HealthResponse": {
-        "type": "object",
-        "required": ["status", "response"],
-        "properties": {
-          "response": {
-            "type": "object"
-          },
-          "status": {
-            "type": "string",
-            "example": "okay"
-          }
-        }
-      },
-      "SuccessfulResponse_ListFederatedPhotoResponse": {
+      "SuccessfulResponse_GetPhotosListResponse": {
         "type": "object",
         "required": ["status", "response"],
         "properties": {
           "response": {
             "type": "object",
-            "required": ["photos"],
+            "required": ["total_count", "photos"],
             "properties": {
+              "next_cursor": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "#/components/schemas/Identifier"
+                  }
+                ]
+              },
               "photos": {
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/PhotoReferenceSchema"
                 }
+              },
+              "total_count": {
+                "type": "integer",
+                "format": "int32",
+                "minimum": 0
               }
             }
           },
@@ -790,6 +890,25 @@
             "properties": {
               "session_key": {
                 "type": "string"
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "okay"
+          }
+        }
+      },
+      "SuccessfulResponse_MeResponse": {
+        "type": "object",
+        "required": ["status", "response"],
+        "properties": {
+          "response": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "$ref": "#/components/schemas/EntityName"
               }
             }
           },
@@ -830,6 +949,33 @@
             "example": "okay"
           }
         }
+      },
+      "SuccessfulResponse_SyncResponse": {
+        "type": "object",
+        "required": ["status", "response"],
+        "properties": {
+          "response": {
+            "type": "object"
+          },
+          "status": {
+            "type": "string",
+            "example": "okay"
+          }
+        }
+      },
+      "SyncResponse": {
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "session_cookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "session_id"
+      },
+      "session_header": {
+        "type": "http",
+        "scheme": "bearer"
       }
     }
   }

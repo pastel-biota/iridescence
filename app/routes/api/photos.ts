@@ -12,7 +12,7 @@ import type { Route } from "./+types/photos";
 export const APIPhotoURL = "/api/photos";
 
 export type APIPhotoResponse = MergeDeep<
-  components["schemas"]["SuccessfulResponse_GetImagesListResponse"],
+  components["schemas"]["SuccessfulResponse_GetPhotosListResponse"],
   {
     response: {
       photos: Array<

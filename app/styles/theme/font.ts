@@ -5,7 +5,7 @@ export const fontFamily: Tokens["fonts"] = {
   metrics: { value: "Barlow, Inter, Roboto, -system-ui, sans-serif" },
   ja: {
     value:
-      "BIZ UDPGothic, Noto Sans JP, Noto Sans CJK JP, Noto Sans, -system-ui, sans-serif",
+      "Zen Kaku Gothic Antique, Noto Sans JP, Noto Sans CJK JP, Noto Sans, -system-ui, sans-serif",
   },
 };
 

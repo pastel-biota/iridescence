@@ -16,10 +16,27 @@ type Story = StoryObj<typeof meta>;
 
 export const Ideal: Story = {
   args: {
-    photoId: "",
-    blurUrl: "https://picsum.photos/id/1024/32/24",
-    thumbnailUrl: "https://picsum.photos/id/1024/1920/1080",
-    fallbackColor: "#ff0000",
+    photo: {
+      id: "photo-1",
+      representativeColor: "#123456",
+      images: {
+        thumbnail: {
+          ext: "png",
+          mime: "image/png",
+          width: 320,
+          height: 240,
+          imageUrl: "https://picsum.photos/id/320/240/1080",
+        },
+        icon: {
+          ext: "png",
+          mime: "image/png",
+          width: 32,
+          height: 24,
+          imageUrl: "https://picsum.photos/id/1024/32/24",
+        },
+      },
+    },
+    selected: false,
   },
   decorators: (Story) => {
     return (
