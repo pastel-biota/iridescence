@@ -8,7 +8,6 @@ on:
 env:
   CHECKOUT_SHA: 8e8c483db84b4bee98b60c0593521ed34d9990e8 # 6.0.1
   NODE_VERSION: 24
-  PNPM_VERSION: 10
 
 jobs:
   lint:
@@ -18,7 +17,6 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           node-version: ${{ env.NODE_VERSION }}
-          pnpm-version: ${{ env.PNPM_VERSION }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm run lint
 
@@ -29,7 +27,6 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           node-version: ${{ env.NODE_VERSION }}
-          pnpm-version: ${{ env.PNPM_VERSION }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm run format:check
 
@@ -40,7 +37,6 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           node-version: ${{ env.NODE_VERSION }}
-          pnpm-version: ${{ env.PNPM_VERSION }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck
 
@@ -51,6 +47,5 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           node-version: ${{ env.NODE_VERSION }}
-          pnpm-version: ${{ env.PNPM_VERSION }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
