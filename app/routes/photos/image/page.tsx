@@ -210,6 +210,8 @@ const root = css({
   zIndex: 1,
   width: "100%",
   height: "100%",
+  maxWidth: "none",
+  maxHeight: "none",
   paddingX: {
     base: "4px",
     sm: "3vw",
