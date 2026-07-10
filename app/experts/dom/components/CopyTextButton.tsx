@@ -1,4 +1,5 @@
 import { type FC, type HTMLAttributes, useState } from "react";
+import { css } from "styled-system/css";
 
 type Props = {
   textToCopy: string;
@@ -29,9 +30,14 @@ export const CopyTextButton: FC<Props> = ({
       onClick={handleClick}
       onBlur={handleLeave}
       onMouseLeave={handleLeave}
+      className={root}
       {...props}
     >
       {children}
     </button>
   );
 };
+
+const root = css({
+  cursor: "pointer",
+});

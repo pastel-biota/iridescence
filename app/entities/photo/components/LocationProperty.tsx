@@ -31,7 +31,7 @@ const MapLinks: FC<MapLinksProps> = ({ latlng }) => {
   return (
     <ul className={mapProvidersList}>
       {externalMapLinks.map((link) => (
-        <li>
+        <li key={link.label}>
           <a
             href={link.urlGenerator(latlng)}
             target="_blank"

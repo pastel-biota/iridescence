@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router";
+import { type ReactEventHandler, useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router";
 import { css } from "styled-system/css";
 import { grid, hstack, vstack } from "styled-system/patterns";
 
@@ -8,7 +9,7 @@ import { mapPhoto } from "~/entities/photo/api/mappers";
 import { LocationProperty } from "~/entities/photo/components/LocationProperty";
 import { PropertyValue } from "~/entities/photo/components/PropertyValue";
 import { getImageBySize } from "~/entities/photo/model";
-import { CopyText } from "~/experts/dom/components/CopyText";
+import { CopyTextButton } from "~/experts/dom/components/CopyTextButton";
 import { TILE_VIEW_TRANSITION_NAME } from "~/features/tile/style";
 import { useViewTransitionFlags } from "~/lib/view-transition";
 import { queryClient } from "~/provider";
@@ -73,6 +74,17 @@ export default function ImageDetailPage({
     initialData: loaderData,
   });
   const { onPage } = useViewTransitionFlags(`/photos/${id}`);
+  const navigate = useNavigate();
+  const ref = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = ref.current;
+    dialog?.showModal();
+
+    return () => {
+      dialog?.close();
+    };
+  }, []);
 
   const blur = getImageBySize(photo.images, 1);
   const main = getImageBySize(photo.images, 2560);
@@ -83,8 +95,13 @@ export default function ImageDetailPage({
     );
   }
 
+  const handleOnClose: ReactEventHandler<HTMLDialogElement> = (e) => {
+    e.preventDefault();
+    void navigate(-1);
+  };
+
   return (
-    <div className={root} role="dialog">
+    <dialog className={root} ref={ref} onCancel={handleOnClose}>
       <Link
         to="/photos"
         className={overlayLink}
@@ -127,7 +144,9 @@ export default function ImageDetailPage({
             <p className={idSection}>
               <span className={idLabel}>ID</span>
               <span className={idText}>{photo.id}</span>
-              <CopyText textToCopy={photo.id} />
+              <CopyTextButton textToCopy={photo.id}>
+                <span className={idCopyButton}>Copy</span>
+              </CopyTextButton>
             </p>
           </div>
           <p className={vstack({ gap: 4, alignItems: "start" })}>
@@ -167,7 +186,7 @@ export default function ImageDetailPage({
           <LocationProperty latlng={photo.properties?.gpsLatLng} />
         </aside>
       </div>
-    </div>
+    </dialog>
   );
 }
 
@@ -179,12 +198,18 @@ function getYMDText(date: Date): string {
   return `${y}/${m}/${d}`;
 }
 
-const root = vstack({
+const root = css({
+  _open: {
+    display: "flex",
+  },
+  flexDirection: "column",
   // brand new stacking context
   transform: "translate(0px)",
   position: "fixed",
   inset: 0,
   zIndex: 1,
+  width: "100%",
+  height: "100%",
   paddingX: {
     base: "4px",
     sm: "3vw",
@@ -302,6 +327,14 @@ const idText = css({
     base: "none",
     sm: "inline",
   },
+});
+
+const idCopyButton = css({
+  color: "brand.identity",
+  fontFamily: "metrics",
+  fontSize: "xs",
+  lineHeight: "none",
+  textDecoration: "underline",
 });
 
 const cameraMachine = css({
