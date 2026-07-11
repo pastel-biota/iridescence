@@ -18,9 +18,10 @@ export function usePhotoList() {
       return (await req.json()) as APIPhotoResponse;
     },
     select: (data) => ({
-      pages: data.pages.map((page) =>
-        page.response.photos.map((photo) => mapPhotoReference(photo)),
-      ),
+      pages: data.pages.map((page) => ({
+        photos: page.response.photos.map((photo) => mapPhotoReference(photo)),
+        totalCount: page.response.total_count,
+      })),
       pageParams: data.pageParams,
     }),
     getNextPageParam: (lastPage) => lastPage.response.next_cursor ?? null,

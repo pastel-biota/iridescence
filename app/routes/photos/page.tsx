@@ -41,7 +41,11 @@ export default function Index() {
     [togglePhoto],
   );
 
-  const photos = data?.pages.flatMap((page) => page);
+  const photos = data?.pages.flatMap((page) => page.photos);
+  const totalCount = data?.pages.reduce(
+    (currentMax, page): number => Math.max(currentMax, page.totalCount),
+    0,
+  );
 
   return (
     <MainLayout>
@@ -49,9 +53,10 @@ export default function Index() {
 
       {/* Image detail overlay comes to here */}
       <Outlet />
-      {photos && (
+      {photos != null && totalCount != null && (
         <PhotoGrid
           photos={photos}
+          totalCount={totalCount}
           onMoreRequested={handleMore}
           onShiftClick={handlePhotoShiftClick}
           selected={selectedPhotos}
