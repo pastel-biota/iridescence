@@ -12,10 +12,6 @@ export type PhotoReference = {
   images: Record<string, ImageMeta>;
 };
 
-export type PhotoViewReference = PhotoReference & {
-  span: [rows: number, cols: number];
-};
-
 export type ImageMeta = {
   ext: string;
   mime: string;

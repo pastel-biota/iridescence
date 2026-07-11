@@ -1,29 +1,13 @@
-import { inArray } from "drizzle-orm";
-import type { MergeDeep } from "type-fest";
-
 import { irisClient } from "~/api/iris/client";
 import type { components } from "~/api/iris/schema";
 import { json } from "~/experts/react-router/response";
-import { database } from "~/infra/db/init";
-import { photoConfig } from "~/infra/db/schema";
 
 import type { Route } from "./+types/photos";
 
 export const APIPhotoURL = "/api/photos";
 
-export type APIPhotoResponse = MergeDeep<
-  components["schemas"]["SuccessfulResponse_GetPhotosListResponse"],
-  {
-    response: {
-      photos: Array<
-        components["schemas"]["PhotoReferenceSchema"] & {
-          rows: number;
-          cols: number;
-        }
-      >;
-    };
-  }
->;
+export type APIPhotoResponse =
+  components["schemas"]["SuccessfulResponse_GetPhotosListResponse"];
 
 export async function loader({ request }: Route.LoaderArgs) {
   const cursor = new URL(request.url).searchParams.get("cursor");
@@ -41,29 +25,5 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw new Error("GET /photos to the Iris failed");
   }
 
-  const db = database();
-  const photoConfigs = await db
-    .select()
-    .from(photoConfig)
-    .where(
-      inArray(
-        photoConfig.id,
-        photos.data.response.photos.map((photo) => photo.id),
-      ),
-    );
-
-  return json(200, {
-    ...photos.data,
-    response: {
-      ...photos.data.response,
-      photos: photos.data.response.photos.map((photo) => {
-        const config = photoConfigs.find((config) => config.id === photo.id);
-        return {
-          ...photo,
-          cols: config?.cols ?? 1,
-          rows: config?.rows ?? 1,
-        };
-      }),
-    },
-  } satisfies APIPhotoResponse);
+  return json(200, photos.data satisfies APIPhotoResponse);
 }

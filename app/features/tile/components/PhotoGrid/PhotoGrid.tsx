@@ -3,13 +3,10 @@ import { css } from "styled-system/css";
 import { grid } from "styled-system/patterns";
 
 import { PhotoTile } from "~/entities/photo/components/PhotoTile/PhotoTile";
-import {
-  type PhotoReference,
-  type PhotoViewReference,
-} from "~/entities/photo/model";
+import { type PhotoReference } from "~/entities/photo/model";
 
 type Props = {
-  photos: PhotoViewReference[];
+  photos: PhotoReference[];
   onMoreRequested: () => void;
   onShiftClick?: (photo: PhotoReference) => void;
   selected?: Set<string>;
@@ -57,27 +54,15 @@ export const PhotoGrid: FC<Props> = ({
   return (
     <div className={root}>
       <ol className={photoGrid}>
-        {photos.map((photo) => {
-          const [row, col] = photo.span;
-
-          return (
-            <li
-              key={photo.id}
-              style={{
-                aspectRatio: `${col.toString()} / ${row.toString()}`,
-                gridRow: `span ${row.toString()}`,
-                gridColumn: `span ${col.toString()}`,
-                padding: "0 2px 2px 0",
-              }}
-            >
-              <PhotoTile
-                photo={photo}
-                onShiftClick={onShiftClick}
-                selected={selected?.has(photo.id) ?? false}
-              />
-            </li>
-          );
-        })}
+        {photos.map((photo) => (
+          <li key={photo.id} className={tile}>
+            <PhotoTile
+              photo={photo}
+              onShiftClick={onShiftClick}
+              selected={selected?.has(photo.id) ?? false}
+            />
+          </li>
+        ))}
       </ol>
       <div ref={bottomRef} />
     </div>
@@ -88,6 +73,11 @@ const root = css({
   marginInline: "auto",
   width: "100%",
   padding: "2px 0 0 2px",
+});
+
+const tile = css({
+  aspectRatio: "1 / 1",
+  padding: "0 2px 2px 0",
 });
 
 const photoGrid = grid({

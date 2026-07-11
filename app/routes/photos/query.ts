@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 import { IRIDESCENCE_BASE_URL } from "~/configs/client";
-import { mapPhotoViewReference } from "~/entities/photo/api/mappers";
+import { mapPhotoReference } from "~/entities/photo/api/mappers";
 
 import { type APIPhotoResponse, APIPhotoURL } from "../api/photos";
 
@@ -19,7 +19,7 @@ export function usePhotoList() {
     },
     select: (data) => ({
       pages: data.pages.map((page) =>
-        page.response.photos.map((photo) => mapPhotoViewReference(photo)),
+        page.response.photos.map((photo) => mapPhotoReference(photo)),
       ),
       pageParams: data.pageParams,
     }),

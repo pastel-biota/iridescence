@@ -7,10 +7,8 @@ import type {
   Photo,
   PhotoProperties,
   PhotoReference,
-  PhotoViewReference,
 } from "~/entities/photo/model";
 import { mapObject } from "~/lib/data/map-object";
-import type { APIPhotoResponse } from "~/routes/api/photos";
 
 export function mapPhoto(photo: components["schemas"]["PhotoScheme"]): Photo {
   return {
@@ -33,19 +31,6 @@ export function mapPhotoReference(
     images: mapObject(photo.images, (key, image) =>
       mapImageReference(photo.id, key, image),
     ),
-  };
-}
-
-export function mapPhotoViewReference(
-  photo: APIPhotoResponse["response"]["photos"][number],
-): PhotoViewReference {
-  return {
-    id: photo.id,
-    representativeColor: photo.representative_color,
-    images: mapObject(photo.images, (key, image) =>
-      mapImageReference(photo.id, key, image),
-    ),
-    span: [photo.rows, photo.cols],
   };
 }
 
