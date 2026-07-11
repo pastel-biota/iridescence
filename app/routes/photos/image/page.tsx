@@ -12,10 +12,10 @@ import { getImageBySize } from "~/entities/photo/model";
 import { CopyTextButton } from "~/experts/dom/components/CopyTextButton";
 import { TILE_VIEW_TRANSITION_NAME } from "~/features/tile/style";
 import { useViewTransitionFlags } from "~/lib/view-transition";
-import { queryClient } from "~/provider";
 
 import type { Route } from "./+types/page";
 import { photoDetailQuery } from "./query";
+import { fetchPhotoDetail } from "./query.server";
 
 export function meta(args: Route.MetaArgs) {
   const photo = mapPhoto(args.loaderData.response.photo);
@@ -59,8 +59,7 @@ export function meta(args: Route.MetaArgs) {
 }
 
 export const loader = async (ctx: Route.LoaderArgs) => {
-  const id = ctx.params.id;
-  const photo = await queryClient.ensureQueryData(photoDetailQuery(id));
+  const photo = await fetchPhotoDetail(ctx.params.id, ctx.request);
 
   return photo;
 };

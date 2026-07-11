@@ -7,5 +7,6 @@ import type { paths } from "./schema";
 
 export const irisClient = createFetchClient<paths>({
   baseUrl: IRIS_BASE_URL,
+  credentials: "include",
 });
 export const irisQuery = createClient(irisClient);

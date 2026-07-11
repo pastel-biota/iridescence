@@ -52,6 +52,14 @@ export default defineConfig([
           varsIgnorePattern: "^_",
         },
       ],
+      // React Router uses thrown `Response`s (including `redirect()`, which
+      // returns a `Response`) as control flow in loaders/actions.
+      "@typescript-eslint/only-throw-error": [
+        "error",
+        {
+          allow: [{ from: "lib", name: "Response" }],
+        },
+      ],
     },
   },
   eslintConfigPrettier,

@@ -1,30 +1,22 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-
-import { IRIDESCENCE_BASE_URL } from "~/configs/client";
+import { irisQuery } from "~/api/iris/client";
 import { mapPhotoReference } from "~/entities/photo/api/mappers";
 
-import { type APIPhotoResponse, APIPhotoURL } from "../api/photos";
-
 export function usePhotoList() {
-  return useInfiniteQuery({
-    queryKey: ["internal", APIPhotoURL],
-    queryFn: async ({ pageParam }): Promise<APIPhotoResponse> => {
-      const url = new URL(APIPhotoURL, IRIDESCENCE_BASE_URL);
-      if (pageParam != null) {
-        url.searchParams.set("cursor", pageParam);
-      }
-
-      const req = await fetch(url);
-      return (await req.json()) as APIPhotoResponse;
+  return irisQuery.useInfiniteQuery(
+    "get",
+    "/photos",
+    {},
+    {
+      pageParamName: "cursor",
+      select: (data) => ({
+        pages: data.pages.map((page) => ({
+          photos: page.response.photos.map((photo) => mapPhotoReference(photo)),
+          totalCount: page.response.total_count,
+        })),
+        pageParams: data.pageParams,
+      }),
+      getNextPageParam: (lastPage) => lastPage.response.next_cursor ?? null,
+      initialPageParam: null as string | null,
     },
-    select: (data) => ({
-      pages: data.pages.map((page) => ({
-        photos: page.response.photos.map((photo) => mapPhotoReference(photo)),
-        totalCount: page.response.total_count,
-      })),
-      pageParams: data.pageParams,
-    }),
-    getNextPageParam: (lastPage) => lastPage.response.next_cursor ?? null,
-    initialPageParam: null as string | null,
-  });
+  );
 }
