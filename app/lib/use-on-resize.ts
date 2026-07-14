@@ -1,11 +1,12 @@
 import { type RefObject, useCallback, useEffect, useState } from "react";
 
 export function useOnResize(
-  elementRef: RefObject<Element | null>,
+  elementRef: Element | RefObject<Element | null>,
   fn: (entry: ResizeObserverEntry) => void,
 ) {
   useEffect(() => {
-    const element = elementRef.current;
+    const element =
+      elementRef instanceof Element ? elementRef : elementRef.current;
     if (element == null) {
       return;
     }
@@ -30,7 +31,7 @@ export function useOnResize(
 }
 
 export function useBasedOnResize<T>(
-  elementRef: RefObject<Element | null>,
+  elementRef: Element | RefObject<Element | null>,
   fn: (entry: ResizeObserverEntry) => T,
 ): T | null {
   const [value, setValue] = useState<T | null>(null);

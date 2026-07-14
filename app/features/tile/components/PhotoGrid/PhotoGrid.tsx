@@ -25,9 +25,13 @@ export const PhotoGrid: FC<Props> = ({
   const containerRef = useRef<HTMLOListElement>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
+  const pc = useBasedOnResize(document.documentElement, (entry) => {
+    return entry.contentRect.width >= 640;
+  });
+
   const [columnCount, gridSize] = useBasedOnResize(containerRef, (entry) => {
     const width = entry.contentRect.width;
-    const minimumItemSize = 200 + 2;
+    const minimumItemSize = (pc == true ? 200 : 150) + 2;
     const columnCount = Math.max(1, Math.floor(width / minimumItemSize));
 
     return [columnCount, width / columnCount];
